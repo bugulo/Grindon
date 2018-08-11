@@ -1,0 +1,16 @@
+## Interface: 80000
+## Title: Grinder
+## Author: Michal "UareBugged" Šlesár
+## Version: 0.1.0
+## SavedVariables: GrinderDB
+
+embeds.xml
+
+Grinder.lua
+
+Modules\Display.lua
+Modules\Plugin.lua
+
+Plugins\Default.lua
+Plugins\Currency.lua
+Plugins\Gatherer.lua
