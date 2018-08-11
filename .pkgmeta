@@ -17,8 +17,8 @@ externals:
     Libs/Ace3/AceDB-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
         tag: latest
-    Libs/Ace3/AceDB-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
+    Libs/Ace3/AceEvent-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
         tag: latest
     Libs/Ace3/AceTimer-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
