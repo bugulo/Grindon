@@ -17,9 +17,16 @@ local defaults = {
 
 function Currency:OnInitialize()
     self.Database = Grinder.Database:RegisterNamespace("Currency", defaults)
+end
 
+function Currency:OnEnable()
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
+end
+
+function Currency:OnDisable()
+    self:UnregisterMessage("OnSegmentStart")
+    self:UnregisterMessage("OnSegmentStop")
 end
 
 function Currency:OnSegmentStart()

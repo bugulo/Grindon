@@ -5,9 +5,14 @@ local Default = Grinder:GetModule("Plugin"):NewModule("Default", "AceConsole-3.0
 
 local Display = Grinder:GetModule("Display")
 
-function Default:OnInitialize()
+function Default:OnEnable()
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
+end
+
+function Default:OnDisable()
+    self:UnregisterMessage("OnSegmentStart")
+    self:UnregisterMessage("OnSegmentStop")
 end
 
 function Default:OnSegmentStart()

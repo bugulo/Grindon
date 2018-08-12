@@ -29,12 +29,22 @@ local defaults = {
 
 function Gatherer:OnInitialize()
     self.Database = Grinder.Database:RegisterNamespace("Gatherer", defaults)
+end
+
+function Gatherer:OnEnable()
     self.LastTarget = nil
 
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
 
     Grinder:ReserveIDs(ids)
+end
+
+function Gatherer:OnDisable()
+    self:UnregisterMessage("OnSegmentStart")
+    self:UnregisterMessage("OnSegmentStop")
+
+    Grinder:UnreserveIDs(ids)
 end
 
 function Gatherer:OnSegmentStart()
