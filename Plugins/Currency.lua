@@ -51,6 +51,6 @@ function Currency:OnMoneyReceive(_, msg)
     if Display:ItemExists("Currency", "money") then
         Display:UpdateItem("Currency", "money", result)
     else
-        Display:SetItem("Currency", "money", 133784, "Gold", result)
+        Display:SetItem("Currency", "money", 133784, "Gold", result, false)
     end
 end
