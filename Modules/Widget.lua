@@ -30,7 +30,7 @@ local defaults = {
 function Widget:OnInitialize()
     self.Database = Grinder.Database:RegisterNamespace("Widget", defaults)
 
-    Config:Register("Widget", options)
+    Config:Register("Widget", options, 1)
 
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
