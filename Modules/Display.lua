@@ -9,7 +9,7 @@ function Display:OnInitialize()
 
     self:CreateFrame()
 
-    --self.Frame:Show()
+    self.Frame:Show()
     --self:SetItem("Test", "test", 133784, "test", "test", false)
 end
 
@@ -82,7 +82,7 @@ function Display:CreateFrame()
     self.Anchor = CreateFrame("Frame", "Anchor", self.Content);
     self.Anchor:EnableMouse(true)
     self.Anchor:SetPoint("BOTTOMRIGHT", self.Content, "BOTTOMRIGHT")
-    self.Anchor:SetSize(20, 20)
+    self.Anchor:SetSize(10, 10)
     self.Anchor:RegisterForDrag("LeftButton")
     self.Anchor:SetScript("OnDragStart", function() self.Frame:StartSizing() end)
     self.Anchor:SetScript("OnDragStop", function() self.Frame:StopMovingOrSizing() end)

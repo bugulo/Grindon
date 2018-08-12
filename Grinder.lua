@@ -35,8 +35,14 @@ function Grinder:ReserveIDs(idtable)
     end
 end
 
+function Grinder:UnreserveIDs(idtable)
+    for _, v in pairs(idtable) do
+        self.Reserved[v] = false
+    end
+end
+
 function Grinder:IsReserved(id)
-    return self:KeyInArray(self.Reserved, id)
+    return self.Reserved[id] == true
 end
 
 function Grinder:StartSegment()
