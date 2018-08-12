@@ -3,7 +3,7 @@ local AceAddon = LibStub("AceAddon-3.0")
 local Grinder = AceAddon:GetAddon("Grinder")
 local Currency = Grinder:GetModule("Plugin"):NewModule("Currency", "AceConsole-3.0", "AceEvent-3.0")
 
-local Display = Grinder:GetModule("Display")
+local Widget = Grinder:GetModule("Widget")
 
 local defaults = {
     global = {
@@ -55,9 +55,9 @@ function Currency:OnMoneyReceive(_, msg)
     local c = math.floor(result - (g * 10000) - (s * 100));
     result = g .. "g" .. s .. "s" .. c .. "c"
 
-    if Display:ItemExists("Currency", "money") then
-        Display:UpdateItem("Currency", "money", result)
+    if Widget:ItemExists("Currency", "money") then
+        Widget:UpdateItem("Currency", "money", result)
     else
-        Display:SetItem("Currency", "money", 133784, "Gold", result, false)
+        Widget:SetItem("Currency", "money", 133784, "Gold", result, false)
     end
 end

@@ -3,7 +3,7 @@ local AceAddon = LibStub("AceAddon-3.0")
 local Grinder = AceAddon:GetAddon("Grinder")
 local Gatherer = Grinder:GetModule("Plugin"):NewModule("Gatherer", "AceConsole-3.0", "AceEvent-3.0")
 
-local Display = Grinder:GetModule("Display")
+local Widget = Grinder:GetModule("Widget")
 
 local spells = {
     "Mining"
@@ -74,19 +74,19 @@ function Gatherer:OnSpellSucceeded(_, unit, _, guid)
 
     self.Database.global.segments[Grinder.CurrentSegment].nodes[self.LastTarget].count = self.Database.global.segments[Grinder.CurrentSegment].nodes[self.LastTarget].count + 1
 
-    if Display:ItemExists("Nodes", self.LastTarget) then
-        Display:UpdateItem("Nodes", self.LastTarget, self.Database.global.segments[Grinder.CurrentSegment].nodes[self.LastTarget].count)
+    if Widget:ItemExists("Nodes", self.LastTarget) then
+        Widget:UpdateItem("Nodes", self.LastTarget, self.Database.global.segments[Grinder.CurrentSegment].nodes[self.LastTarget].count)
     else
-        Display:SetItem("Nodes", self.LastTarget, nil, self.LastTarget, 1)
+        Widget:SetItem("Nodes", self.LastTarget, nil, self.LastTarget, 1)
     end
 end
 
 function Gatherer:OnLootReceive(_, itemId, amount, name)
     if Grinder:InArray(ids, itemId) ~= true then return end
 
-    if Display:ItemExists("Gathering", itemId) then
-        Display:UpdateItem("Gathering", itemId, Grinder:GetItemAmount(itemId))
+    if Widget:ItemExists("Gathering", itemId) then
+        Widget:UpdateItem("Gathering", itemId, Grinder:GetItemAmount(itemId))
     else
-        Display:SetItem("Gathering", itemId, GetItemIcon(itemId), name, amount)
+        Widget:SetItem("Gathering", itemId, GetItemIcon(itemId), name, amount)
     end
 end

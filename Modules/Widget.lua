@@ -1,34 +1,62 @@
 local AceAddon = LibStub("AceAddon-3.0")
 
 local Grinder = AceAddon:GetAddon("Grinder")
-local Display = Grinder:NewModule("Display", "AceTimer-3.0", "AceConsole-3.0", "AceEvent-3.0")
+local Widget = Grinder:NewModule("Widget", "AceTimer-3.0", "AceConsole-3.0", "AceEvent-3.0")
 
-function Display:OnInitialize()
+local Config = Grinder:GetModule("Config")
+
+local options = {
+    lockMove = {
+        name = "Lock Frame Moving",
+        type = "toggle",
+        set = function(_, val) Widget.Database.profile.lockMove = val end,
+        get = function() return Widget.Database.profile.lockMove end
+    },
+    lockSize = {
+        name = "Lock Frame Sizing",
+        type = "toggle",
+        set = function(_, val) Widget.Database.profile.lockSize = val end,
+        get = function() return Widget.Database.profile.lockSize end
+    }
+}
+
+local defaults = {
+    profile = {
+        lockMove = false,
+        lockSize = false
+    }
+}
+
+function Widget:OnInitialize()
+    self.Database = Grinder.Database:RegisterNamespace("Widget", defaults)
+
+    Config:Register("Widget", options)
+
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
 
     self:CreateFrame()
 
-    self.Frame:Show()
+    --self.Frame:Show()
     --self:SetItem("Test", "test", 133784, "test", "test", false)
 end
 
-function Display:OnSegmentStart()
+function Widget:OnSegmentStart()
     self.Time = 0
     self.Timer = self:ScheduleRepeatingTimer("SegmentTimer", 1)
 
     self.Frame:Show()
 end
 
-function Display:OnSegmentStop()
+function Widget:OnSegmentStop()
     self:CancelTimer(self.Timer)
 
     self:Clean()
     self.Frame:Hide()
 end
 
-function Display:CreateFrame()
-    self.Frame = CreateFrame("Frame", "DisplayFrame" , UIParent);
+function Widget:CreateFrame()
+    self.Frame = CreateFrame("Frame", "GrinderWidget" , UIParent);
     self.Frame:SetResizable(true)
     self.Frame:SetMovable(true)
     self.Frame:SetPoint("CENTER", UIParent)
@@ -36,21 +64,21 @@ function Display:CreateFrame()
     self.Frame:SetMinResize(200, 200)
     self.Frame:SetClampedToScreen(true)
 
-    --local FrameBackground = self.Frame:CreateTexture(nil, "BACKGROUND")
-    --FrameBackground:SetColorTexture(1, 1, 1)
-    --FrameBackground:SetAllPoints(self.Frame);
+    local FrameBackground = self.Frame:CreateTexture(nil, "BACKGROUND")
+    FrameBackground:SetColorTexture(0, 0, 0, 0.5)
+    FrameBackground:SetAllPoints(self.Frame);
 
-    self.Header = CreateFrame("Frame", "DisplayHeader" , self.Frame);
+    self.Header = CreateFrame("Frame", "GrinderWidgetHeader" , self.Frame);
     self.Header:EnableMouse(true)
     self.Header:SetPoint("TOPLEFT", self.Frame)
     self.Header:SetPoint("TOPRIGHT", self.Frame)
     self.Header:SetHeight(25)
     self.Header:RegisterForDrag("LeftButton")
-    self.Header:SetScript("OnDragStart", function() self.Frame:StartMoving() end)
+    self.Header:SetScript("OnDragStart", function() if not Widget.Database.profile.lockMove then self.Frame:StartMoving() end end)
     self.Header:SetScript("OnDragStop", function() self.Frame:StopMovingOrSizing() end)
 
     local HeaderBackground = self.Header:CreateTexture(nil, "OVERLAY")
-    HeaderBackground:SetColorTexture(0, 0, 0)
+    HeaderBackground:SetColorTexture(0, 0, 0, 0.6)
     HeaderBackground:SetAllPoints(self.Header);
 
     self.Header.Time = self.Header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -64,13 +92,13 @@ function Display:CreateFrame()
     self.Header.Title:SetJustifyH("LEFT")
     self.Header.Title:SetHeight(20)
 
-    self.Content = CreateFrame("Frame", "DisplayContent" , self.Frame);
+    self.Content = CreateFrame("Frame", "GrinderWidgetContent" , self.Frame);
     --self.Content:EnableMouse(true)
     self.Content:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT", 5, -5)
     self.Content:SetPoint("BOTTOMRIGHT", self.Frame, -5, 5)
     self.Content:SetClipsChildren(true)
 
-    self.ContentTop = CreateFrame("Frame", "DisplayContentTop" , self.Content);
+    self.ContentTop = CreateFrame("Frame", "GrinderWidgetContentTop" , self.Content);
     self.ContentTop:SetPoint("TOPLEFT", self.Content)
     self.ContentTop:SetPoint("TOPRIGHT", self.Content)
     self.ContentTop:SetHeight(1)
@@ -79,16 +107,17 @@ function Display:CreateFrame()
     --ContentBackground:SetColorTexture(0, 1, 0)
     --ContentBackground:SetAllPoints(self.Content);
 
-    self.Anchor = CreateFrame("Frame", "Anchor", self.Content);
+    self.Anchor = CreateFrame("Frame", "GrinderWidgetAnchor", self.Frame);
     self.Anchor:EnableMouse(true)
-    self.Anchor:SetPoint("BOTTOMRIGHT", self.Content, "BOTTOMRIGHT")
-    self.Anchor:SetSize(10, 10)
+    self.Anchor:SetPoint("BOTTOMRIGHT", self.Frame, "BOTTOMRIGHT")
+    self.Anchor:SetSize(30, 30)
     self.Anchor:RegisterForDrag("LeftButton")
-    self.Anchor:SetScript("OnDragStart", function() self.Frame:StartSizing() end)
+    self.Anchor:SetScript("OnDragStart", function() if not Widget.Database.profile.lockSize then self.Frame:StartSizing() end end)
     self.Anchor:SetScript("OnDragStop", function() self.Frame:StopMovingOrSizing() end)
 
     local AnchorBackground = self.Anchor:CreateTexture(nil, "OVERLAY")
-    AnchorBackground:SetColorTexture(0, 0, 0)
+    AnchorBackground:SetTexture("Interface/Cursor/Item.blp")
+    AnchorBackground:SetRotation(math.rad(-180))
     AnchorBackground:SetAllPoints(self.Anchor);
 
     self.Content.Categories = {}
@@ -96,7 +125,7 @@ function Display:CreateFrame()
     self.Frame:Hide()
 end
 
-function Display:SegmentTimer()
+function Widget:SegmentTimer()
     self.Time = self.Time + 1
     local h = string.format("%02.f", math.floor(self.Time / 3600));
     local m = string.format("%02.f", math.floor(self.Time / 60 - (h * 60)));
@@ -106,7 +135,7 @@ function Display:SegmentTimer()
     self:UpdateFrequency()
 end
 
-function Display:SetItem(category, id, icon, name, amount, frequency)
+function Widget:SetItem(category, id, icon, name, amount, frequency)
     if frequency == nil then frequency = true end
 
     if self.Content.Categories[category] == nil then
@@ -157,7 +186,7 @@ function Display:SetItem(category, id, icon, name, amount, frequency)
     self:Recalculate()
 end
 
-function Display:UpdateItem(category, id, amount)
+function Widget:UpdateItem(category, id, amount)
     self.Content.Categories[category].Items[id].Amount:SetText(amount)
 
     if self.Content.Categories[category].Items[id].Frequency:GetText() then
@@ -167,11 +196,11 @@ function Display:UpdateItem(category, id, amount)
     end
 end
 
-function Display:ItemExists(category, id)
+function Widget:ItemExists(category, id)
     return (self.Content.Categories[category] ~= nil and self.Content.Categories[category].Items[id] ~= nil and self.Content.Categories[category].Items[id].Active == true)
 end
 
-function Display:Recalculate()
+function Widget:Recalculate()
     local lastItem = self.ContentTop
     for name, category in pairs(self.Content.Categories) do
         if category.Active then
@@ -190,7 +219,7 @@ function Display:Recalculate()
     end
 end
 
-function Display:UpdateFrequency()
+function Widget:UpdateFrequency()
     for name, category in pairs(self.Content.Categories) do
         if category.Active then
             for id, item in pairs(category.Items) do
@@ -206,7 +235,7 @@ function Display:UpdateFrequency()
     end
 end
 
-function Display:Clean()
+function Widget:Clean()
     self.Header.Time:SetText("00:00:00")
 
     for name, category in pairs(self.Content.Categories) do

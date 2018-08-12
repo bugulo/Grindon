@@ -15,7 +15,7 @@ local options = {
 }
 
 local defaults = {
-    global = {
+    profile = {
         ["*"] = {
             enabled = true
         }
@@ -30,10 +30,10 @@ function Plugin:OnInitialize()
             name = name,
             type = "toggle",
             set = function(_, val) self:ToggleModule(name, val) end,
-            get = function() return self.Database.global[name].enabled end
+            get = function() return self.Database.profile[name].enabled end
         }
 
-        if self.Database.global[name].enabled then module:Enable() end
+        if self.Database.profile[name].enabled then module:Enable() end
     end
 
     Config:Register("Plugins", options)
@@ -47,7 +47,7 @@ function Plugin:ToggleModule(name, value)
             self:GetModule(name):Disable()
         end
 
-        self.Database.global[name].enabled = value
+        self.Database.profile[name].enabled = value
     else
         self:Print("Please stop segment before turning on/off new modules")
     end

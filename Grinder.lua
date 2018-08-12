@@ -7,6 +7,7 @@ local defaults = {
     global = {
         segments = {
             ["*"] = {
+                character = nil,
                 timeStart = nil,
                 items = {
                     ["*"] = {
@@ -42,7 +43,7 @@ function Grinder:UnreserveIDs(idtable)
 end
 
 function Grinder:IsReserved(id)
-    return self.Reserved[id] == true
+   return self.Reserved[id] == true
 end
 
 function Grinder:StartSegment()
@@ -52,6 +53,7 @@ function Grinder:StartSegment()
     end
 
     self.CurrentSegment = self:RandomID()
+    self.Database.global.segments[self.CurrentSegment].character = UnitName("player")
     self.Database.global.segments[self.CurrentSegment].timeStart = time(date("!*t"))
 
     self:RegisterEvent("CHAT_MSG_LOOT", "OnLootReceive")

@@ -9,8 +9,8 @@ embeds.xml
 Grinder.lua
 
 Modules\Config.lua
+Modules\Widget.lua
 Modules\Plugin.lua
-Modules\Display.lua
 
 Plugins\Default.lua
 Plugins\Currency.lua
