@@ -71,7 +71,7 @@ end
 
 function Grinder:OnLootReceive(_, msg)
     msg = string.gsub(msg, "|", "/")
-    local name = string.match(msg, "%[(.+)%]") --FIX THIS SHIT
+    local name = string.match(msg, "%[(.+)%]")
     local count = string.match(msg, "x(%d+)")
     if count == nil then count = 1 end
 
@@ -95,13 +95,13 @@ end
 
 function Grinder:CheckQueue()
     for key, value in pairs(self.Queue) do
-        local name, itemLink = GetItemInfo(value.identifier)
+        local _, itemLink = GetItemInfo(value.identifier)
 
         if itemLink ~= nil then
-            value.callback(self:GetIDFromLink(itemLink), name)
+            value.callback(self:GetIDFromLink(itemLink))
             self.Queue[key] = nil
         else
-            local id = GetItemInfoInstant(identifier)
+            local id = GetItemInfoInstant(value.identifier)
             if id ~= nil then
                 value.callback(id)
             end

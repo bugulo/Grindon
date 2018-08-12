@@ -32,7 +32,6 @@ function Display:CreateFrame()
     self.Frame:SetSize(200, 200)
     self.Frame:SetMinResize(200, 200)
     self.Frame:SetClampedToScreen(true)
-    self.Frame:SetClipsChildren(true)
 
     self.Header = CreateFrame("Frame", "DisplayHeader" , self.Frame);
     self.Header:EnableMouse(true)
@@ -48,13 +47,14 @@ function Display:CreateFrame()
     HeaderBackground:SetAllPoints(self.Header);
 
     self.Content = CreateFrame("Frame", "DisplayContent" , self.Frame);
-    self.Content:EnableMouse(true)
+    --self.Content:EnableMouse(true)
     self.Content:SetPoint("TOPLEFT", self.Frame, 0, -20)
     self.Content:SetPoint("BOTTOMRIGHT", self.Frame)
+    self.Content:SetClipsChildren(true)
 
-    local ContentBackground = self.Content:CreateTexture(nil, "BACKGROUND")
-    ContentBackground:SetColorTexture(0, 1, 0)
-    ContentBackground:SetAllPoints(self.Content);
+    --local ContentBackground = self.Content:CreateTexture(nil, "BACKGROUND")
+    --ContentBackground:SetColorTexture(0, 1, 0)
+    --ContentBackground:SetAllPoints(self.Content);
 
     self.Anchor = CreateFrame("Frame", "Anchor", self.Content);
     self.Anchor:EnableMouse(true)
@@ -85,6 +85,7 @@ function Display:SetItem(category, id, icon, name, amount)
     if self.Content.Categories[category] == nil then
         self.Content.Categories[category] = self.Content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         self.Content.Categories[category]:SetHeight(20)
+        self.Content.Categories[category]:SetJustifyH("LEFT")
         self.Content.Categories[category].Items = {}
     end
 
@@ -94,13 +95,16 @@ function Display:SetItem(category, id, icon, name, amount)
 
         self.Content.Categories[category].Items[id].Icon = self.Content.Categories[category].Items[id]:CreateTexture(nil, "OVERLAY")
         self.Content.Categories[category].Items[id].Icon:SetSize(15, 15)
-        self.Content.Categories[category].Items[id].Icon:SetPoint("TOPLEFT", self.Content.Categories[category].Items[id])
-
-        self.Content.Categories[category].Items[id].Name = self.Content.Categories[category].Items[id]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        self.Content.Categories[category].Items[id].Name:SetPoint("CENTER", self.Content.Categories[category].Items[id])
+        self.Content.Categories[category].Items[id].Icon:SetPoint("LEFT", self.Content.Categories[category].Items[id], 5, 0)
 
         self.Content.Categories[category].Items[id].Amount = self.Content.Categories[category].Items[id]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        self.Content.Categories[category].Items[id].Amount:SetPoint("TOPRIGHT", self.Content.Categories[category].Items[id])
+        self.Content.Categories[category].Items[id].Amount:SetPoint("RIGHT", self.Content.Categories[category].Items[id], "RIGHT")
+        self.Content.Categories[category].Items[id].Amount:SetJustifyH("RIGHT")
+
+        self.Content.Categories[category].Items[id].Name = self.Content.Categories[category].Items[id]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        self.Content.Categories[category].Items[id].Name:SetPoint("LEFT", self.Content.Categories[category].Items[id].Icon, "RIGHT", 5, 0)
+        self.Content.Categories[category].Items[id].Name:SetPoint("RIGHT", self.Content.Categories[category].Items[id].Amount, "LEFT", -5, 0)
+        self.Content.Categories[category].Items[id].Name:SetJustifyH("LEFT")
     end
 
     self.Content.Categories[category]:SetText(category)
