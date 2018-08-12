@@ -11,11 +11,17 @@ externals:
     Libs/Ace3/AceConfig-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
         tag: latest
+    Libs/Ace3/AceConfigDialog-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfigDialog-3.0
+        tag: latest
     Libs/Ace3/AceConsole-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
         tag: latest
     Libs/Ace3/AceDB-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
+        tag: latest
+    Libs/Ace3/AceDBOptions-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDBOptions-3.0
         tag: latest
     Libs/Ace3/AceEvent-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
