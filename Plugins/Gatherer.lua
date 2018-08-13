@@ -74,19 +74,19 @@ function Gatherer:OnSpellSucceeded(_, unit, _, guid)
 
     self.Database.global.segments[Grinder.CurrentSegment].nodes[self.LastTarget].count = self.Database.global.segments[Grinder.CurrentSegment].nodes[self.LastTarget].count + 1
 
-    if Widget:ItemExists("Nodes", self.LastTarget) then
-        Widget:UpdateItem("Nodes", self.LastTarget, self.Database.global.segments[Grinder.CurrentSegment].nodes[self.LastTarget].count)
+    if Widget:ItemExists("Gatherer", "Nodes", self.LastTarget) then
+        Widget:UpdateItem("Gatherer", "Nodes", self.LastTarget, self.Database.global.segments[Grinder.CurrentSegment].nodes[self.LastTarget].count)
     else
-        Widget:SetItem("Nodes", self.LastTarget, nil, self.LastTarget, 1)
+        Widget:SetItem("Gatherer", "Nodes", self.LastTarget, nil, self.LastTarget, 1)
     end
 end
 
 function Gatherer:OnLootReceive(_, itemId, amount, name)
     if Grinder:InArray(ids, itemId) ~= true then return end
 
-    if Widget:ItemExists("Gathering", itemId) then
-        Widget:UpdateItem("Gathering", itemId, Grinder:GetItemAmount(itemId))
+    if Widget:ItemExists("Gatherer", "Default", itemId) then
+        Widget:UpdateItem("Gatherer", "Default", itemId, Grinder:GetItemAmount(itemId))
     else
-        Widget:SetItem("Gathering", itemId, GetItemIcon(itemId), name, amount)
+        Widget:SetItem("Gatherer", "Default", itemId, GetItemIcon(itemId), name, amount)
     end
 end

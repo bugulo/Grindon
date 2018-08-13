@@ -55,9 +55,9 @@ function Currency:OnMoneyReceive(_, msg)
     local c = math.floor(result - (g * 10000) - (s * 100));
     result = g .. "g" .. s .. "s" .. c .. "c"
 
-    if Widget:ItemExists("Currency", "money") then
-        Widget:UpdateItem("Currency", "money", result)
+    if Widget:ItemExists("Currency", "General", "money") then
+        Widget:UpdateItem("Currency", "General", "money", result)
     else
-        Widget:SetItem("Currency", "money", 133784, "Gold", result, false)
+        Widget:SetItem("Currency", "General", "money", 133784, "Gold", result, false)
     end
 end

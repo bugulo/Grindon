@@ -26,9 +26,9 @@ end
 function Default:OnLootReceive(_, itemId, amount, name)
     if Grinder:IsReserved(itemId) == true then return end
 
-    if Widget:ItemExists("Default", itemId) then
-        Widget:UpdateItem("Default", itemId, Grinder:GetItemAmount(itemId))
+    if Widget:ItemExists("Default", "General", itemId) then
+        Widget:UpdateItem("Default", "General", itemId, Grinder:GetItemAmount(itemId))
     else
-        Widget:SetItem("Default", itemId, GetItemIcon(itemId), name, amount)
+        Widget:SetItem("Default", "General", itemId, GetItemIcon(itemId), name, amount)
     end
 end
