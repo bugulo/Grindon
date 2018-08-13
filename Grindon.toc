@@ -1,7 +1,7 @@
 ## Interface: 80000
 ## Title: Grindon
-## Author: Michal "UareBugged" Šlesár
-## Version: 0.1.0
+## Author: @project-author@
+## Version: @file-revision@-@file-hash@
 ## SavedVariables: GrindonDB
 
 Embeds.xml
