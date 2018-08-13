@@ -46,13 +46,13 @@ function Widget:OnInitialize()
 
     self:CreateFrame()
 
-    --[[self.Plugins = {}
-    self.Frame:Show()
-    self:SetItem("Core", "Test", "test", 133784, "test", "test", false)
-    self:SetItem("Core", "Test", "testt", 133784, "test", "test", false)
+    --self.Plugins = {}
+    --self.Frame:Show()
+    --self:SetItem("Core", "Test", "test", 133784, "test", "test", false)
+    --self:SetItem("Core", "Test", "testt", 133784, "test", "test", false)
 
-    self:RemoveCategory("Core", "Test")
-    self:RemoveItem("Core", "Test", "testt")--]]
+    --self:RemoveCategory("Core", "Test")
+    --self:RemoveItem("Core", "Test", "testt")
 end
 
 function Widget:OnSegmentStart()
@@ -174,7 +174,7 @@ function Widget:SetItem(plugin, category, id, icon, name, amount, frequency)
             Items = {}
         }
         self.FrameCache[frameID]:SetScript("OnMouseDown", function(_, button) if button == "LeftButton" then self:ToggleCategory(plugin, category) end end)
-        self.FrameCache[frameID].Text:SetPoint("LEFT", self.FrameCache[frameID], 10, 0)
+        self.FrameCache[frameID].Icon:SetPoint("LEFT", self.FrameCache[frameID], 10, 0)
         self.FrameCache[frameID].Text:SetText(category)
     end
 
@@ -231,6 +231,7 @@ function Widget:FindCategoryFrame(parent)
     for index, value in pairs(self.FrameCache) do
         if not value.Taken and value.Type == 0 then
             self.FrameCache[index].Taken = true
+            self.FrameCache[index].Icon:SetRotation(math.rad(-90))
             self.FrameCache[index]:Show()
             return index
         end
@@ -239,8 +240,14 @@ function Widget:FindCategoryFrame(parent)
     self.FrameCache[id] = CreateFrame("Frame", nil, parent)
     self.FrameCache[id]:SetHeight(20)
 
-    self.FrameCache[id].Text =  self.FrameCache[id]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    self.FrameCache[id].Text:SetPoint("LEFT", self.FrameCache[id])
+    self.FrameCache[id].Icon = self.FrameCache[id]:CreateTexture(nil, "OVERLAY")
+    self.FrameCache[id].Icon:SetPoint("LEFT", self.FrameCache[id])
+    self.FrameCache[id].Icon:SetSize(11, 11)
+    self.FrameCache[id].Icon:SetTexture("Interface/Moneyframe/Arrow-Right-Down.blp")
+    self.FrameCache[id].Icon:SetRotation(math.rad(-90))
+
+    self.FrameCache[id].Text = self.FrameCache[id]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    self.FrameCache[id].Text:SetPoint("LEFT", self.FrameCache[id].Icon, "RIGHT")
     self.FrameCache[id].Text:SetPoint("RIGHT", self.FrameCache[id])
     self.FrameCache[id].Text:SetHeight(20)
     self.FrameCache[id].Text:SetJustifyH("LEFT")
@@ -265,7 +272,7 @@ function Widget:FindItemFrame(parent)
 
     self.FrameCache[id].Icon = self.FrameCache[id]:CreateTexture(nil, "OVERLAY")
     self.FrameCache[id].Icon:SetSize(15, 15)
-    self.FrameCache[id].Icon:SetPoint("LEFT", self.FrameCache[id], 20, 0)
+    self.FrameCache[id].Icon:SetPoint("LEFT", self.FrameCache[id], 25, 0)
 
     self.FrameCache[id].Amount = self.FrameCache[id]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     self.FrameCache[id].Amount:SetPoint("RIGHT", self.FrameCache[id])
@@ -298,6 +305,13 @@ function Widget:TogglePlugin(plugin)
         end
     end
     self.Plugins[plugin].Active = not self.Plugins[plugin].Active
+
+    if self.Plugins[plugin].Active then
+        self.FrameCache[self.Plugins[plugin].Frame].Icon:SetRotation(math.rad(-90))
+    else
+        self.FrameCache[self.Plugins[plugin].Frame].Icon:SetRotation(0)
+    end
+
     self:Recalculate()
 end
 
@@ -310,6 +324,13 @@ function Widget:ToggleCategory(plugin, category)
         end
     end
     self.Plugins[plugin].Categories[category].Active = not self.Plugins[plugin].Categories[category].Active
+
+    if self.Plugins[plugin].Categories[category].Active then
+        self.FrameCache[self.Plugins[plugin].Categories[category].Frame].Icon:SetRotation(math.rad(-90))
+    else
+        self.FrameCache[self.Plugins[plugin].Categories[category].Frame].Icon:SetRotation(0)
+    end
+
     self:Recalculate()
 end
 
