@@ -37,7 +37,7 @@ local defaults = {
 function Widget:OnInitialize()
     self.Database = Grinder.Database:RegisterNamespace("Widget", defaults)
 
-    Config:Register("Widget", options, 2)
+    Config:Register("Widget", options, 3)
 
     self.FrameCache = {}
 

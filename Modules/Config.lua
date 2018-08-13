@@ -14,16 +14,19 @@ local options = {
 
 function Config:OnInitialize()
     options.args.profiles = AceDBOptions:GetOptionsTable(Grinder.Database)
-    options.args.profiles.order = 4
+    options.args.profiles.order = 5
 
     AceConfig:RegisterOptionsTable("Grinder", options, "grinder")
     AceConfigDialog:AddToBlizOptions("Grinder", "Grinder")
 end
 
-function Config:Register(name, args, order)
+function Config:Register(name, args, order, disabled)
+    if disabled == nil then disabled = false end
+
     options.plugins[name] = {
         [name] = {
             type = "group",
+            disabled = disabled,
             order = order,
             childGroups = "select",
             name = name,

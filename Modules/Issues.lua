@@ -5,10 +5,7 @@ local Issues = Grinder:NewModule("Issues")
 
 local Config = Grinder:GetModule("Config")
 
-local list = {
-    "some issue",
-    "some issue"
-}
+local list = {}
 
 local options = {
     header = {
@@ -25,5 +22,5 @@ local options = {
 }
 
 function Issues:OnInitialize()
-    Config:Register("Issues/Bugs", options, 5)
+    Config:Register("Issues/Bugs", options, 6)
 end

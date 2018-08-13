@@ -37,7 +37,7 @@ function Plugin:OnInitialize()
         if self.Database.profile[name].enabled then module:Enable() end
     end
 
-    Config:Register("Plugins", options, 3)
+    Config:Register("Plugins", options, 4)
 end
 
 function Plugin:RegisterConfig(name, args, order)
