@@ -40,9 +40,12 @@ function Plugin:OnInitialize()
     Config:Register("Plugins", options, 4)
 end
 
-function Plugin:RegisterConfig(name, args, order)
+function Plugin:RegisterConfig(name, args, order, disabled)
+    if disabled == nil then disabled = false end
+
     options[name] = {
         type = "group",
+        disabled = disabled,
         order = order + 1,
         childGroups = "select",
         name = name,

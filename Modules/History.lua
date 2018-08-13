@@ -5,9 +5,8 @@ local History = Grinder:NewModule("History")
 
 local Config = Grinder:GetModule("Config")
 
-local options = {
-}
+local options = {}
 
-function Issues:OnInitialize()
+function History:OnInitialize()
     Config:Register("History", options, 2, true)
 end

@@ -2,7 +2,8 @@ local AceAddon = LibStub("AceAddon-3.0")
 local AceLocale = LibStub("AceLocale-3.0")
 
 local Grinder = AceAddon:GetAddon("Grinder")
-local Gatherer = Grinder:GetModule("Plugin"):NewModule("Gatherer", "AceConsole-3.0", "AceEvent-3.0")
+local Plugin = Grinder:GetModule("Plugin")
+local Gatherer = Plugin:NewModule("Gatherer", "AceConsole-3.0", "AceEvent-3.0")
 
 local Widget = Grinder:GetModule("Widget")
 
@@ -75,8 +76,11 @@ local defaults = {
     }
 }
 
+local options = {}
+
 function Gatherer:OnInitialize()
     self.Database = Grinder.Database:RegisterNamespace("Gatherer", defaults)
+    --Plugin:RegisterConfig("Gatherer", options, 2, true)
 end
 
 function Gatherer:OnEnable()

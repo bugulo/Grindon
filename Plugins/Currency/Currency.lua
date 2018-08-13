@@ -1,7 +1,8 @@
 local AceAddon = LibStub("AceAddon-3.0")
 
 local Grinder = AceAddon:GetAddon("Grinder")
-local Currency = Grinder:GetModule("Plugin"):NewModule("Currency", "AceConsole-3.0", "AceEvent-3.0")
+local Plugin = Grinder:GetModule("Plugin")
+local Currency = Plugin:NewModule("Currency", "AceConsole-3.0", "AceEvent-3.0")
 
 local Widget = Grinder:GetModule("Widget")
 
@@ -18,8 +19,11 @@ local defaults = {
     }
 }
 
+local options = {}
+
 function Currency:OnInitialize()
     self.Database = Grinder.Database:RegisterNamespace("Currency", defaults)
+    --Plugin:RegisterConfig("Currency", options, 1, true)
 end
 
 function Currency:OnEnable()

@@ -51,7 +51,6 @@ function Grinder:UnreserveIDs(idtable)
 end
 
 function Grinder:IsReserved(id)
-    self:Print(id, self.Reserved[id])
    return self.Reserved[id] == true
 end
 

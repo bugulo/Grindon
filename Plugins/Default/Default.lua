@@ -6,6 +6,12 @@ local Default = Plugin:NewModule("Default", "AceConsole-3.0", "AceEvent-3.0")
 
 local Widget = Grinder:GetModule("Widget")
 
+local options = {}
+
+function Default:OnInitialize()
+    --Plugin:RegisterConfig("Default", options, 0, true)
+end
+
 function Default:OnEnable()
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")

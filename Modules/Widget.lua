@@ -156,6 +156,7 @@ function Widget:SetItem(plugin, category, id, icon, name, amount, frequency)
             Categories = {}
         }
         self.FrameCache[frameID]:SetScript("OnMouseDown", function(_, button) if button == "LeftButton" then self:TogglePlugin(plugin) end end)
+        self.FrameCache[frameID].Icon:SetPoint("LEFT", self.FrameCache[frameID])
         self.FrameCache[frameID].Text:SetText(plugin)
     end
 

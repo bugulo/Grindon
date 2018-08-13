@@ -16,6 +16,7 @@ Modules\Widget.lua
 Modules\Plugin.lua
 
 Modules\Changelog.lua
+Modules\History.lua
 Modules\Issues.lua
 
 Plugins\Default\Default.xml
