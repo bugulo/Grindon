@@ -24,8 +24,8 @@ function Grinder:OnInitialize()
 
     self.Reserved = {}
 
-    self:RegisterChatCommand("start", "StartSegment")
-    self:RegisterChatCommand("stop", "StopSegment")
+    self:RegisterChatCommand("grindstart", "StartSegment")
+    self:RegisterChatCommand("grindstop", "StopSegment")
 end
 
 function Grinder:ReserveIDs(idtable)

@@ -16,7 +16,7 @@ function Config:OnInitialize()
     options.args.profiles = AceDBOptions:GetOptionsTable(Grinder.Database)
     options.args.profiles.order = 4
 
-    AceConfig:RegisterOptionsTable("Grinder", options)
+    AceConfig:RegisterOptionsTable("Grinder", options, "grinder")
     AceConfigDialog:AddToBlizOptions("Grinder", "Grinder")
 end
 

@@ -157,6 +157,7 @@ function Widget:SetItem(plugin, category, id, icon, name, amount, frequency)
 
     if self.Plugins[plugin] == nil then
         local frameID = self:FindCategoryFrame(self.Content)
+        --self:Print("PLUG", frameID)
         self.Plugins[plugin] = {
             Frame = frameID,
             Active = true,
@@ -168,6 +169,7 @@ function Widget:SetItem(plugin, category, id, icon, name, amount, frequency)
 
     if self.Plugins[plugin].Categories[category] == nil then
         local frameID = self:FindCategoryFrame(self.FrameCache[self.Plugins[plugin].Frame])
+        --self:Print("CAT", frameID)
         self.Plugins[plugin].Categories[category] = {
             Frame = frameID,
             Active = true,
@@ -182,6 +184,7 @@ function Widget:SetItem(plugin, category, id, icon, name, amount, frequency)
     --if self.Plugins[plugin].Categories[category].Ignore[id] then return end
 
     local frameID = self:FindItemFrame(self.FrameCache[self.Plugins[plugin].Categories[category].Frame])
+    --self:Print("ITEM", frameID)
     self.FrameCache[frameID]:SetScript("OnMouseDown", function(_, button) if button == "RightButton" then self:IgnoreItem(plugin, category, id) end end)
     self.Plugins[plugin].Categories[category].Items[id] = {
         Frame = frameID,
@@ -241,7 +244,6 @@ function Widget:FindCategoryFrame(parent)
         if not value.Taken and value.Type == 0 then
             self.FrameCache[index].Taken = true
             self.FrameCache[index].Icon:SetRotation(math.rad(-90))
-            self.FrameCache[index]:Show()
             return index
         end
     end
@@ -263,7 +265,6 @@ function Widget:FindCategoryFrame(parent)
 
     self.FrameCache[id].Type = 0
     self.FrameCache[id].Taken = true
-    self.FrameCache[id]:Show()
     return id
 end
 
@@ -271,7 +272,6 @@ function Widget:FindItemFrame(parent)
     for index, value in pairs(self.FrameCache) do
         if not value.Taken and value.Type == 1 then
             self.FrameCache[index].Taken = true
-            self.FrameCache[index]:Show()
             return index
         end
     end
@@ -301,7 +301,6 @@ function Widget:FindItemFrame(parent)
 
     self.FrameCache[id].Type = 1
     self.FrameCache[id].Taken = true
-    self.FrameCache[id]:Show()
     return id
 end
 
@@ -348,18 +347,21 @@ function Widget:Recalculate()
     for _, plugin in pairs(self.Plugins) do
         self.FrameCache[plugin.Frame]:SetPoint("TOPLEFT", lastItem, "BOTTOMLEFT")
         self.FrameCache[plugin.Frame]:SetPoint("TOPRIGHT", lastItem, "BOTTOMRIGHT")
+        self.FrameCache[plugin.Frame]:Show()
         lastItem = self.FrameCache[plugin.Frame]
 
         if plugin.Active then
             for _, category in pairs(plugin.Categories) do
                 self.FrameCache[category.Frame]:SetPoint("TOPLEFT", lastItem, "BOTTOMLEFT")
                 self.FrameCache[category.Frame]:SetPoint("TOPRIGHT", lastItem, "BOTTOMRIGHT")
+                self.FrameCache[category.Frame]:Show()
                 lastItem = self.FrameCache[category.Frame]
 
                 if category.Active then
                     for _, item in pairs(category.Items) do
                         self.FrameCache[item.Frame]:SetPoint("TOPLEFT", lastItem, "BOTTOMLEFT")
                         self.FrameCache[item.Frame]:SetPoint("TOPRIGHT", lastItem, "BOTTOMRIGHT")
+                        self.FrameCache[item.Frame]:Show()
                         lastItem = self.FrameCache[item.Frame]
                     end
                 end
@@ -403,8 +405,7 @@ function Widget:Clean()
 end
 
 function Widget:CleanCategory(frame)
-    self.FrameCache[frame]:
-    SetScript("OnMouseDown", nil)
+    self.FrameCache[frame]:SetScript("OnMouseDown", nil)
     self.FrameCache[frame].Text:SetText(nil)
     self.FrameCache[frame].Taken = false
     self.FrameCache[frame]:Hide()
