@@ -46,10 +46,13 @@ function Widget:OnInitialize()
 
     self:CreateFrame()
 
-    --self.Plugins = {}
-    --self.Frame:Show()
-    --self:SetItem("Core", "Test", "test", 133784, "test", "test", false)
-    --self:SetItem("Core", "Test", "testt", 133784, "test", "test", false)
+    --[[self.Plugins = {}
+    self.Frame:Show()
+    self:SetItem("Core", "Test", "test", 133784, "test", "test", false)
+    self:SetItem("Core", "Test", "testt", 133784, "test", "test", false)
+
+    self:RemoveCategory("Core", "Test")
+    self:RemoveItem("Core", "Test", "testt")--]]
 end
 
 function Widget:OnSegmentStart()
@@ -202,6 +205,28 @@ function Widget:ItemExists(plugin, category, id)
     return (self.Plugins[plugin] ~= nil and self.Plugins[plugin].Categories[category] ~= nil and self.Plugins[plugin].Categories[category].Items[id] ~= nil)
 end
 
+function Widget:RemoveCategory(plugin, category, id)
+    if self.Plugins[plugin].Categories[category] == nil then return end
+
+    self:CleanCategory(self.Plugins[plugin].Categories[category].Frame)
+
+    for _, item in pairs(self.Plugins[plugin].Categories[category].Items) do
+        self:CleanItem(item.Frame)
+    end
+
+    self.Plugins[plugin].Categories[category] = nil
+    self:Recalculate()
+end
+
+function Widget:RemoveItem(plugin, category, id)
+    if self.Plugins[plugin].Categories[category].Items[id] == nil then return end
+
+    self:CleanItem(self.Plugins[plugin].Categories[category].Items[id].Frame)
+
+    self.Plugins[plugin].Categories[category].Items[id] = nil
+    self:Recalculate()
+end
+
 function Widget:FindCategoryFrame(parent)
     for index, value in pairs(self.FrameCache) do
         if not value.Taken and value.Type == 0 then
@@ -291,21 +316,18 @@ end
 function Widget:Recalculate()
     local lastItem = self.ContentTop
     for _, plugin in pairs(self.Plugins) do
-        self:Print(plugin)
         self.FrameCache[plugin.Frame]:SetPoint("TOPLEFT", lastItem, "BOTTOMLEFT")
         self.FrameCache[plugin.Frame]:SetPoint("TOPRIGHT", lastItem, "BOTTOMRIGHT")
         lastItem = self.FrameCache[plugin.Frame]
 
         if plugin.Active then
             for _, category in pairs(plugin.Categories) do
-                self:Print(category)
                 self.FrameCache[category.Frame]:SetPoint("TOPLEFT", lastItem, "BOTTOMLEFT")
                 self.FrameCache[category.Frame]:SetPoint("TOPRIGHT", lastItem, "BOTTOMRIGHT")
                 lastItem = self.FrameCache[category.Frame]
 
                 if category.Active then
                     for _, item in pairs(category.Items) do
-                        self:Print(item)
                         self.FrameCache[item.Frame]:SetPoint("TOPLEFT", lastItem, "BOTTOMLEFT")
                         self.FrameCache[item.Frame]:SetPoint("TOPRIGHT", lastItem, "BOTTOMRIGHT")
                         lastItem = self.FrameCache[item.Frame]
@@ -338,25 +360,31 @@ function Widget:Clean()
     self.Header.Time:SetText("00:00:00")
 
     for _, plugin in pairs(self.Plugins) do
-        self.FrameCache[plugin.Frame].Text:SetText(nil)
-        self.FrameCache[plugin.Frame].Taken = false
-        self.FrameCache[plugin.Frame]:Hide()
+        self:CleanCategory(plugin.Frame)
 
         for _, category in pairs(plugin.Categories) do
-            self.FrameCache[category.Frame].Text:SetText(nil)
-            self.FrameCache[category.Frame].Taken = false
-            self.FrameCache[category.Frame]:Hide()
+            self:CleanCategory(category.Frame)
 
             for _, item in pairs(category.Items) do
-                self.FrameCache[item.Frame].Icon:SetTexture(nil)
-                self.FrameCache[item.Frame].Amount:SetText(nil)
-                self.FrameCache[item.Frame].Name:SetText(nil)
-                self.FrameCache[item.Frame].Frequency:SetText(nil)
-                self.FrameCache[item.Frame].Taken = false
-                self.FrameCache[item.Frame]:Hide()
+                self:CleanItem(item.Frame)
             end
         end
     end
+end
+
+function Widget:CleanCategory(frame)
+    self.FrameCache[frame].Text:SetText(nil)
+    self.FrameCache[frame].Taken = false
+    self.FrameCache[frame]:Hide()
+end
+
+function Widget:CleanItem(frame)
+    self.FrameCache[frame].Icon:SetTexture(nil)
+    self.FrameCache[frame].Amount:SetText(nil)
+    self.FrameCache[frame].Name:SetText(nil)
+    self.FrameCache[frame].Frequency:SetText(nil)
+    self.FrameCache[frame].Taken = false
+    self.FrameCache[frame]:Hide()
 end
 
 function Widget:ToggleFrequency(val)
