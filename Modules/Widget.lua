@@ -46,13 +46,43 @@ function Widget:OnInitialize()
 
     self:CreateFrame()
 
-    --self.Plugins = {}
-    --self.Frame:Show()
-    --self:SetItem("Core", "Test", "test", 133784, "test", "test", false)
-    --self:SetItem("Core", "Test", "testt", 133784, "test", "test", false)
+    self.Plugins = {}
+    self.Frame:Show()
+    self:SetItem("Test1", "Test", "0", 133784, "test", "test", false)
+    self:SetItem("Test1", "Test", "1", 133784, "test", "test", false)
+    self:SetItem("Test2", "Test", "2", 133784, "test", "test", false)
+    self:SetItem("Test1", "Test", "3", 133784, "test", "test", false)
+    self:SetItem("Test1", "Test2", "4", 133784, "test", "test", false)
+    self:SetItem("Test2", "Test", "5", 133784, "test", "test", false)
+    self:SetItem("Test1", "Test2", "6", 133784, "test", "test", false)
+    self:SetItem("Test2", "Test", "7", 133784, "test", "test", false)
+    self:SetItem("Test2", "Test", "8", 133784, "test", "test", false)
+    self:SetItem("Test3", "Test", "9", 133784, "test", "test", false)
+    self:SetItem("Test2", "Test", "10", 133784, "test", "test", false)
+    self:SetItem("Test3", "Test", "11", 133784, "test", "test", false)
+    self:SetItem("Test3", "Test", "12", 133784, "test", "test", false)
+    self:SetItem("Test3", "Test", "13", 133784, "test", "test", false)
+    self:SetItem("Test3", "Test", "14", 133784, "test", "test", false)
 
-    --self:RemoveCategory("Core", "Test")
-    --self:RemoveItem("Core", "Test", "testt")
+    self:Clean()
+    self.Plugins = nil
+
+    self.Plugins = {}
+    self:SetItem("Test1", "Test", "0", 133784, "test", "test", false)
+    self:SetItem("Test1", "Test", "1", 133784, "test", "test", false)
+    self:SetItem("Test2", "Test", "2", 133784, "test", "test", false)
+    self:SetItem("Test1", "Test", "3", 133784, "test", "test", false)
+    self:SetItem("Test1", "Test2", "4", 133784, "test", "test", false)
+    self:SetItem("Test2", "Test", "5", 133784, "test", "test", false)
+    self:SetItem("Test1", "Test2", "6", 133784, "test", "test", false)
+    self:SetItem("Test2", "Test", "7", 133784, "test", "test", false)
+    self:SetItem("Test2", "Test", "8", 133784, "test", "test", false)
+    self:SetItem("Test3", "Test", "9", 133784, "test", "test", false)
+    self:SetItem("Test2", "Test", "10", 133784, "test", "test", false)
+    self:SetItem("Test3", "Test", "11", 133784, "test", "test", false)
+    self:SetItem("Test3", "Test", "12", 133784, "test", "test", false)
+    self:SetItem("Test3", "Test", "13", 133784, "test", "test", false)
+    self:SetItem("Test3", "Test", "14", 133784, "test", "test", false)
 end
 
 function Widget:OnSegmentStart()
@@ -183,6 +213,7 @@ function Widget:SetItem(plugin, category, id, icon, name, amount, frequency)
 
     --if self.Plugins[plugin].Categories[category].Ignore[id] then return end
 
+    self:RemoveItem(plugin, category, id)
     local frameID = self:FindItemFrame(self.FrameCache[self.Plugins[plugin].Categories[category].Frame])
     --self:Print("ITEM", frameID)
     self.FrameCache[frameID]:SetScript("OnMouseDown", function(_, button) if button == "RightButton" then self:IgnoreItem(plugin, category, id) end end)
@@ -244,6 +275,7 @@ function Widget:FindCategoryFrame(parent)
         if not value.Taken and value.Type == 0 then
             self.FrameCache[index].Taken = true
             self.FrameCache[index].Icon:SetRotation(math.rad(-90))
+            self.FrameCache[index]:SetParent(parent)
             return index
         end
     end
@@ -272,6 +304,7 @@ function Widget:FindItemFrame(parent)
     for index, value in pairs(self.FrameCache) do
         if not value.Taken and value.Type == 1 then
             self.FrameCache[index].Taken = true
+            self.FrameCache[index]:SetParent(parent)
             return index
         end
     end
