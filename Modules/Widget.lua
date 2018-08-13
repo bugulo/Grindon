@@ -171,6 +171,7 @@ function Widget:SetItem(plugin, category, id, icon, name, amount, frequency)
         self.Plugins[plugin].Categories[category] = {
             Frame = frameID,
             Active = true,
+            --Ignore = {},
             Items = {}
         }
         self.FrameCache[frameID]:SetScript("OnMouseDown", function(_, button) if button == "LeftButton" then self:ToggleCategory(plugin, category) end end)
@@ -178,7 +179,10 @@ function Widget:SetItem(plugin, category, id, icon, name, amount, frequency)
         self.FrameCache[frameID].Text:SetText(category)
     end
 
+    --if self.Plugins[plugin].Categories[category].Ignore[id] then return end
+
     local frameID = self:FindItemFrame(self.FrameCache[self.Plugins[plugin].Categories[category].Frame])
+    self.FrameCache[frameID]:SetScript("OnMouseDown", function(_, button) if button == "RightButton" then self:IgnoreItem(plugin, category, id) end end)
     self.Plugins[plugin].Categories[category].Items[id] = {
         Frame = frameID,
         Icon = icon,
@@ -224,6 +228,11 @@ function Widget:RemoveItem(plugin, category, id)
     self:CleanItem(self.Plugins[plugin].Categories[category].Items[id].Frame)
 
     self.Plugins[plugin].Categories[category].Items[id] = nil
+    self:Recalculate()
+end
+
+function Widget:IgnoreItem(plugin, category, id)
+    self:RemoveItem(plugin, category, id)
     self:Recalculate()
 end
 
@@ -394,12 +403,15 @@ function Widget:Clean()
 end
 
 function Widget:CleanCategory(frame)
+    self.FrameCache[frame]:
+    SetScript("OnMouseDown", nil)
     self.FrameCache[frame].Text:SetText(nil)
     self.FrameCache[frame].Taken = false
     self.FrameCache[frame]:Hide()
 end
 
 function Widget:CleanItem(frame)
+    self.FrameCache[frame]:SetScript("OnMouseDown", nil)
     self.FrameCache[frame].Icon:SetTexture(nil)
     self.FrameCache[frame].Amount:SetText(nil)
     self.FrameCache[frame].Name:SetText(nil)
