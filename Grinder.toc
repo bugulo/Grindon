@@ -5,6 +5,7 @@
 ## SavedVariables: GrinderDB
 
 Embeds.xml
+Locales.xml
 
 Grinder.lua
 
@@ -17,6 +18,6 @@ Modules\Plugin.lua
 Modules\Changelog.lua
 Modules\Issues.lua
 
-Plugins\Default.lua
-Plugins\Currency.lua
-Plugins\Gatherer.lua
+Plugins\Default\Default.xml
+Plugins\Currency\Currency.xml
+Plugins\Gatherer\Gatherer.xml

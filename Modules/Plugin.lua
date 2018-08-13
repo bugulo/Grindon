@@ -10,6 +10,7 @@ local options = {
     general = {
         name = "General",
         type = "group",
+        order = 0,
         args = {}
     }
 }
@@ -37,6 +38,16 @@ function Plugin:OnInitialize()
     end
 
     Config:Register("Plugins", options, 3)
+end
+
+function Plugin:RegisterConfig(name, args, order)
+    options[name] = {
+        type = "group",
+        order = order + 1,
+        childGroups = "select",
+        name = name,
+        args = args
+    }
 end
 
 function Plugin:ToggleModule(name, value)

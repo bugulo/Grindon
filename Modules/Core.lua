@@ -44,7 +44,7 @@ function Core:OnLootReceive(_, msg, _, _, _, player)
         end
     end
 
-    local id = string.match(msg, "Hitem:(%d+):")
+    local id = tonumber(string.match(msg, "Hitem:(%d+):"))
     local name = string.match(msg, "%[(.+)%]")
     local count = string.match(msg, "x(%d+)")
     if count == nil then count = 1 end

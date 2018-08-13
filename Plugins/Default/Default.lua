@@ -1,7 +1,8 @@
 local AceAddon = LibStub("AceAddon-3.0")
 
 local Grinder = AceAddon:GetAddon("Grinder")
-local Default = Grinder:GetModule("Plugin"):NewModule("Default", "AceConsole-3.0", "AceEvent-3.0")
+local Plugin = Grinder:GetModule("Plugin")
+local Default = Plugin:NewModule("Default", "AceConsole-3.0", "AceEvent-3.0")
 
 local Widget = Grinder:GetModule("Widget")
 
@@ -26,9 +27,11 @@ end
 function Default:OnLootReceive(_, itemId, amount, name)
     if Grinder:IsReserved(itemId) == true then return end
 
-    if Widget:ItemExists("Default", "General", itemId) then
-        Widget:UpdateItem("Default", "General", itemId, Grinder:GetItemAmount(itemId))
+    local _, itemType = GetItemInfoInstant(itemId)
+
+    if Widget:ItemExists("Default", itemType, itemId) then
+        Widget:UpdateItem("Default", itemType, itemId, Grinder:GetItemAmount(itemId))
     else
-        Widget:SetItem("Default", "General", itemId, GetItemIcon(itemId), name, Grinder:GetItemAmount(itemId))
+        Widget:SetItem("Default", itemType, itemId, GetItemIcon(itemId), name, Grinder:GetItemAmount(itemId))
     end
 end

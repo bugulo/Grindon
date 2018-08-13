@@ -1,5 +1,6 @@
 local AceAddon = LibStub("AceAddon-3.0")
 local AceDB = LibStub("AceDB-3.0")
+local AceLocale = LibStub("AceLocale-3.0")
 
 local Grinder = AceAddon:NewAddon("Grinder", "AceConsole-3.0", "AceEvent-3.0")
 
@@ -20,6 +21,7 @@ local defaults = {
 }
 
 function Grinder:OnInitialize()
+    self.Locale = AceLocale:GetLocale("Grinder")
     self.Database = AceDB:New("GrinderDB", defaults, true)
 
     self.Reserved = {}
@@ -30,17 +32,27 @@ end
 
 function Grinder:ReserveIDs(idtable)
     for _, v in pairs(idtable) do
-        self.Reserved[v] = true
+        self:Print("RESERVING", v)
+        if type(v) == "table" then
+            self:ReserveIDs(v)
+        else
+            self.Reserved[v] = true
+        end
     end
 end
 
 function Grinder:UnreserveIDs(idtable)
     for _, v in pairs(idtable) do
-        self.Reserved[v] = false
+        if type(v) == "table" then
+            self:UnreserveIDs(v)
+        else
+            self.Reserved[v] = false
+        end
     end
 end
 
 function Grinder:IsReserved(id)
+    self:Print(id, self.Reserved[id])
    return self.Reserved[id] == true
 end
 
