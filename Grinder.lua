@@ -1,7 +1,7 @@
 local AceAddon = LibStub("AceAddon-3.0")
 local AceDB = LibStub("AceDB-3.0")
 
-local Grinder = AceAddon:NewAddon("Grinder", "AceTimer-3.0", "AceConsole-3.0", "AceEvent-3.0")
+local Grinder = AceAddon:NewAddon("Grinder", "AceConsole-3.0", "AceEvent-3.0")
 
 local defaults = {
     global = {
@@ -21,10 +21,8 @@ local defaults = {
 
 function Grinder:OnInitialize()
     self.Database = AceDB:New("GrinderDB", defaults, true)
-    self.Timer = self:ScheduleRepeatingTimer("CheckQueue", 1)
 
     self.Reserved = {}
-    self.Queue = {}
 
     self:RegisterChatCommand("start", "StartSegment")
     self:RegisterChatCommand("stop", "StopSegment")
@@ -56,7 +54,6 @@ function Grinder:StartSegment()
     self.Database.global.segments[self.CurrentSegment].character = UnitName("player")
     self.Database.global.segments[self.CurrentSegment].timeStart = time(date("!*t"))
 
-    self:RegisterEvent("CHAT_MSG_LOOT", "OnLootReceive")
     self:SendMessage("OnSegmentStart", self.CurrentSegment)
     self:Print("Segment started")
 end
@@ -72,22 +69,8 @@ function Grinder:StopSegment()
     self.Database.global.segments[self.CurrentSegment].timeEnd = time(date("!*t"))
     self.CurrentSegment = nil
 
-    self:UnregisterEvent("CHAT_MSG_LOOT")
     self:SendMessage("OnSegmentStop", id)
     self:Print("Segment stopped")
-end
-
-function Grinder:OnLootReceive(_, msg)
-    msg = string.gsub(msg, "|", "/")
-    local name = string.match(msg, "%[(.+)%]")
-    local count = string.match(msg, "x(%d+)")
-    if count == nil then count = 1 end
-
-    self:GetItemID(name, function(id)
-        self.Database.global.segments[self.CurrentSegment].items[id].count = self.Database.global.segments[self.CurrentSegment].items[id].count + count
-
-        self:SendMessage("OnLootReceive", id, count, name)
-    end)
 end
 
 function Grinder:GetSegment()
@@ -96,44 +79,6 @@ end
 
 function Grinder:GetItemAmount(itemId)
     return self.Database.global.segments[self.CurrentSegment].items[itemId].count
-end
-
-
--- UTILS
-
-function Grinder:CheckQueue()
-    for key, value in pairs(self.Queue) do
-        local _, itemLink = GetItemInfo(value.identifier)
-
-        if itemLink ~= nil then
-            value.callback(self:GetIDFromLink(itemLink))
-            self.Queue[key] = nil
-        else
-            local id = GetItemInfoInstant(value.identifier)
-            if id ~= nil then
-                value.callback(id)
-            end
-        end
-    end
-end
-
-function Grinder:GetItemID(identifier, callback)
-    local _, itemLink = GetItemInfo(identifier)
-    if itemLink ~= nil then
-        callback(self:GetIDFromLink(itemLink))
-    else
-        local id = GetItemInfoInstant(identifier)
-        if id ~= nil then
-            callback(id)
-        else
-            table.insert(self.Queue, {identifier = identifier, callback = callback})
-        end
-    end
-end
-
-function Grinder:GetIDFromLink(link)
-    local match = string.match(link, "%:(%d+)%:")
-    return tonumber(match)
 end
 
 function Grinder:InArray(array, val)
