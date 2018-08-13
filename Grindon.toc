@@ -1,7 +1,7 @@
 ## Interface: 80000
 ## Title: Grindon
 ## Author: @project-author@
-## Version: @project-version@-@file-abbreviated-hash@
+## Version: @project-version@
 ## SavedVariables: GrindonDB
 
 Embeds.xml
