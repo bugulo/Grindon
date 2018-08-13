@@ -1,10 +1,10 @@
 local AceAddon = LibStub("AceAddon-3.0")
 local AceConfig = LibStub("AceConfig-3.0")
 
-local Grinder = AceAddon:GetAddon("Grinder")
-local Plugin = Grinder:NewModule("Plugin", "AceConsole-3.0", "AceEvent-3.0")
+local Grindon = AceAddon:GetAddon("Grindon")
+local Plugin = Grindon:NewModule("Plugin", "AceConsole-3.0", "AceEvent-3.0")
 
-local Config = Grinder:GetModule("Config")
+local Config = Grindon:GetModule("Config")
 
 local options = {
     general = {
@@ -24,7 +24,7 @@ local defaults = {
 }
 
 function Plugin:OnInitialize()
-    self.Database = Grinder.Database:RegisterNamespace("Plugins", defaults)
+    self.Database = Grindon.Database:RegisterNamespace("Plugins", defaults)
 
     for name, module in self:IterateModules() do
         options.general.args[name] = {
@@ -54,7 +54,7 @@ function Plugin:RegisterConfig(name, args, order, disabled)
 end
 
 function Plugin:ToggleModule(name, value)
-    if not Grinder.CurrentSegment then
+    if not Grindon.CurrentSegment then
         if value then
             self:GetModule(name):Enable()
         else

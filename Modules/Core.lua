@@ -1,9 +1,9 @@
 local AceAddon = LibStub("AceAddon-3.0")
 
-local Grinder = AceAddon:GetAddon("Grinder")
-local Core = Grinder:NewModule("Core", "AceConsole-3.0", "AceEvent-3.0")
+local Grindon = AceAddon:GetAddon("Grindon")
+local Core = Grindon:NewModule("Core", "AceConsole-3.0", "AceEvent-3.0")
 
-local Config = Grinder:GetModule("Config")
+local Config = Grindon:GetModule("Config")
 
 local options = {
     groupLoot = {
@@ -21,7 +21,7 @@ local defaults = {
 }
 
 function Core:OnInitialize()
-    self.Database = Grinder.Database:RegisterNamespace("Core", defaults)
+    self.Database = Grindon.Database:RegisterNamespace("Core", defaults)
 
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
@@ -49,6 +49,6 @@ function Core:OnLootReceive(_, msg, _, _, _, player)
     local count = string.match(msg, "x(%d+)")
     if count == nil then count = 1 end
 
-    Grinder.Database.global.segments[Grinder.CurrentSegment].items[id].count = Grinder.Database.global.segments[Grinder.CurrentSegment].items[id].count + count
+    Grindon.Database.global.segments[Grindon.CurrentSegment].items[id].count = Grindon.Database.global.segments[Grindon.CurrentSegment].items[id].count + count
     self:SendMessage("OnLootReceive", id, count, name)
 end

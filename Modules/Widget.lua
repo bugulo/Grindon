@@ -1,9 +1,9 @@
 local AceAddon = LibStub("AceAddon-3.0")
 
-local Grinder = AceAddon:GetAddon("Grinder")
-local Widget = Grinder:NewModule("Widget", "AceTimer-3.0", "AceConsole-3.0", "AceEvent-3.0")
+local Grindon = AceAddon:GetAddon("Grindon")
+local Widget = Grindon:NewModule("Widget", "AceTimer-3.0", "AceConsole-3.0", "AceEvent-3.0")
 
-local Config = Grinder:GetModule("Config")
+local Config = Grindon:GetModule("Config")
 
 local options = {
     lockMove = {
@@ -35,7 +35,7 @@ local defaults = {
 }
 
 function Widget:OnInitialize()
-    self.Database = Grinder.Database:RegisterNamespace("Widget", defaults)
+    self.Database = Grindon.Database:RegisterNamespace("Widget", defaults)
 
     Config:Register("Widget", options, 3)
 
@@ -65,7 +65,7 @@ function Widget:OnSegmentStop()
 end
 
 function Widget:CreateFrame()
-    self.Frame = CreateFrame("Frame", "GrinderWidget" , UIParent);
+    self.Frame = CreateFrame("Frame", "GrindonWidget" , UIParent);
     self.Frame:SetResizable(true)
     self.Frame:SetMovable(true)
     self.Frame:SetPoint("CENTER", UIParent)
@@ -77,7 +77,7 @@ function Widget:CreateFrame()
     FrameBackground:SetColorTexture(0, 0, 0, 0.5)
     FrameBackground:SetAllPoints(self.Frame);
 
-    self.Header = CreateFrame("Frame", "GrinderWidgetHeader" , self.Frame);
+    self.Header = CreateFrame("Frame", "GrindonWidgetHeader" , self.Frame);
     self.Header:EnableMouse(true)
     self.Header:SetPoint("TOPLEFT", self.Frame)
     self.Header:SetPoint("TOPRIGHT", self.Frame)
@@ -97,17 +97,17 @@ function Widget:CreateFrame()
     self.Header.Title = self.Header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     self.Header.Title:SetPoint("LEFT", self.Header, 5, 0)
     self.Header.Title:SetPoint("RIGHT", self.Header.Time, "LEFT")
-    self.Header.Title:SetText("Grinder Segment")
+    self.Header.Title:SetText("Grindon Segment")
     self.Header.Title:SetJustifyH("LEFT")
     self.Header.Title:SetHeight(20)
 
-    self.Content = CreateFrame("Frame", "GrinderWidgetContent" , self.Frame);
+    self.Content = CreateFrame("Frame", "GrindonWidgetContent" , self.Frame);
     --self.Content:EnableMouse(true)
     self.Content:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT", 5, -5)
     self.Content:SetPoint("BOTTOMRIGHT", self.Frame, -5, 5)
     self.Content:SetClipsChildren(true)
 
-    self.ContentTop = CreateFrame("Frame", "GrinderWidgetContentTop" , self.Content);
+    self.ContentTop = CreateFrame("Frame", "GrindonWidgetContentTop" , self.Content);
     self.ContentTop:SetPoint("TOPLEFT", self.Content)
     self.ContentTop:SetPoint("TOPRIGHT", self.Content)
     self.ContentTop:SetHeight(1)
@@ -116,7 +116,7 @@ function Widget:CreateFrame()
     --ContentBackground:SetColorTexture(0, 1, 0)
     --ContentBackground:SetAllPoints(self.Content);
 
-    self.Anchor = CreateFrame("Frame", "GrinderWidgetAnchor", self.Frame);
+    self.Anchor = CreateFrame("Frame", "GrindonWidgetAnchor", self.Frame);
     self.Anchor:EnableMouse(true)
     self.Anchor:SetPoint("BOTTOMRIGHT", self.Frame, "BOTTOMRIGHT")
     self.Anchor:SetSize(30, 30)

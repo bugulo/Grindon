@@ -1,10 +1,10 @@
 local AceAddon = LibStub("AceAddon-3.0")
 
-local Grinder = AceAddon:GetAddon("Grinder")
-local Plugin = Grinder:GetModule("Plugin")
+local Grindon = AceAddon:GetAddon("Grindon")
+local Plugin = Grindon:GetModule("Plugin")
 local Currency = Plugin:NewModule("Currency", "AceConsole-3.0", "AceEvent-3.0")
 
-local Widget = Grinder:GetModule("Widget")
+local Widget = Grindon:GetModule("Widget")
 
 local defaults = {
     global = {
@@ -22,7 +22,7 @@ local defaults = {
 local options = {}
 
 function Currency:OnInitialize()
-    self.Database = Grinder.Database:RegisterNamespace("Currency", defaults)
+    self.Database = Grindon.Database:RegisterNamespace("Currency", defaults)
     --Plugin:RegisterConfig("Currency", options, 1, true)
 end
 
@@ -55,9 +55,9 @@ function Currency:OnMoneyReceive(_, msg)
     if silver == nil then silver = 0 end
     if copper == nil then copper = 0 end
 
-    local result = self.Database.global.segments[Grinder.CurrentSegment].money + gold * 10000 + silver * 100 + copper
+    local result = self.Database.global.segments[Grindon.CurrentSegment].money + gold * 10000 + silver * 100 + copper
 
-    self.Database.global.segments[Grinder.CurrentSegment].money = result
+    self.Database.global.segments[Grindon.CurrentSegment].money = result
 
     local g = math.floor(result / 10000);
     local s = math.floor((result - g * 10000) / 100);
@@ -77,13 +77,13 @@ function Currency:OnCurrencyReceive(_, msg)
     local count = string.match(msg, "x(%d+)")
     if count == nil then count = 1 end
 
-    self.Database.global.segments[Grinder.CurrentSegment][id].count = self.Database.global.segments[Grinder.CurrentSegment][id].count + count
+    self.Database.global.segments[Grindon.CurrentSegment][id].count = self.Database.global.segments[Grindon.CurrentSegment][id].count + count
 
     local _, _, texture = GetCurrencyInfo(id)
 
     if Widget:ItemExists("Currency", "General", id) then
-        Widget:UpdateItem("Currency", "General", id, self.Database.global.segments[Grinder.CurrentSegment][id].count)
+        Widget:UpdateItem("Currency", "General", id, self.Database.global.segments[Grindon.CurrentSegment][id].count)
     else
-        Widget:SetItem("Currency", "General", id, texture, name, self.Database.global.segments[Grinder.CurrentSegment][id].count)
+        Widget:SetItem("Currency", "General", id, texture, name, self.Database.global.segments[Grindon.CurrentSegment][id].count)
     end
 end

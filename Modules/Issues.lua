@@ -1,9 +1,9 @@
 local AceAddon = LibStub("AceAddon-3.0")
 
-local Grinder = AceAddon:GetAddon("Grinder")
-local Issues = Grinder:NewModule("Issues")
+local Grindon = AceAddon:GetAddon("Grindon")
+local Issues = Grindon:NewModule("Issues")
 
-local Config = Grinder:GetModule("Config")
+local Config = Grindon:GetModule("Config")
 
 local list = {}
 

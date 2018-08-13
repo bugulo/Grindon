@@ -1,21 +1,21 @@
 local AceAddon = LibStub("AceAddon-3.0")
 
-local Grinder = AceAddon:GetAddon("Grinder")
-local Changelog = Grinder:NewModule("Changelog")
+local Grindon = AceAddon:GetAddon("Grindon")
+local Changelog = Grindon:NewModule("Changelog")
 
-local Config = Grinder:GetModule("Config")
+local Config = Grindon:GetModule("Config")
 
 local list = {
     ["v0.1 - 13.8.2018"] = {
-        "Core Grinder functionality",
+        "Core Grindon functionality",
         "Start segments via /startgrind & stop it with /stopgrind",
         "Frequency meter in segment widget (items per minute)",
         "Toggle categories/plugins by left clicking on them",
         "Hide temporary specific items by right clicking on them",
         "Setup your profiles in config window",
-        "Enable or disable specific plugins of Grinder\n",
+        "Enable or disable specific plugins of Grindon\n",
         "Plugin/Default",
-        "As Grinder is not covering many activies yet, default module is tracking all items you loot and placing them into categories\n",
+        "As Grindon is not covering many activies yet, default module is tracking all items you loot and placing them into categories\n",
         "Plugin/Currencies",
         "Track loot of all currencies and money\n",
         "Plugin/Gatherer",
@@ -33,7 +33,7 @@ local options = {
     },
     notice_content = {
         order = 1,
-        name = "Please keep in mind that Grinder is in an early stage of development. Although core parts of Grinder are done, there are not many plugins right now and customization of specific features is weak as of now. Grinder is currently localized only into enUS locale. You can read more information on the project page.",
+        name = "Please keep in mind that Grindon is in an early stage of development. Although core parts of Grindon are done, there are not many plugins right now and customization of specific features is weak as of now. Grindon is currently localized only into enUS locale. You can read more information on the project page.",
         type = "description",
         fontSize = "large"
     }

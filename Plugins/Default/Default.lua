@@ -1,10 +1,10 @@
 local AceAddon = LibStub("AceAddon-3.0")
 
-local Grinder = AceAddon:GetAddon("Grinder")
-local Plugin = Grinder:GetModule("Plugin")
+local Grindon = AceAddon:GetAddon("Grindon")
+local Plugin = Grindon:GetModule("Plugin")
 local Default = Plugin:NewModule("Default", "AceConsole-3.0", "AceEvent-3.0")
 
-local Widget = Grinder:GetModule("Widget")
+local Widget = Grindon:GetModule("Widget")
 
 local options = {}
 
@@ -31,13 +31,13 @@ function Default:OnSegmentStop()
 end
 
 function Default:OnLootReceive(_, itemId, amount, name)
-    if Grinder:IsReserved(itemId) == true then return end
+    if Grindon:IsReserved(itemId) == true then return end
 
     local _, itemType = GetItemInfoInstant(itemId)
 
     if Widget:ItemExists("Default", itemType, itemId) then
-        Widget:UpdateItem("Default", itemType, itemId, Grinder:GetItemAmount(itemId))
+        Widget:UpdateItem("Default", itemType, itemId, Grindon:GetItemAmount(itemId))
     else
-        Widget:SetItem("Default", itemType, itemId, GetItemIcon(itemId), name, Grinder:GetItemAmount(itemId))
+        Widget:SetItem("Default", itemType, itemId, GetItemIcon(itemId), name, Grindon:GetItemAmount(itemId))
     end
 end

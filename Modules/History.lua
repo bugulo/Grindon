@@ -1,9 +1,9 @@
 local AceAddon = LibStub("AceAddon-3.0")
 
-local Grinder = AceAddon:GetAddon("Grinder")
-local History = Grinder:NewModule("History")
+local Grindon = AceAddon:GetAddon("Grindon")
+local History = Grindon:NewModule("History")
 
-local Config = Grinder:GetModule("Config")
+local Config = Grindon:GetModule("Config")
 
 local options = {}
 

@@ -1,4 +1,4 @@
-package-as: Grinder
+package-as: Grindon
 enable-nolib-creation: no
 
 externals:

@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("Grinder_Gatherer", "enUS", true)
+local L = LibStub("AceLocale-3.0"):NewLocale("Grindon_Gatherer", "enUS", true)
 
 L["CATEGORY_NODES"] = "Nodes"
 L["CATEGORY_MINING"] = "Ores"

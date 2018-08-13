@@ -1,13 +1,13 @@
 local AceAddon = LibStub("AceAddon-3.0")
 local AceLocale = LibStub("AceLocale-3.0")
 
-local Grinder = AceAddon:GetAddon("Grinder")
-local Plugin = Grinder:GetModule("Plugin")
+local Grindon = AceAddon:GetAddon("Grindon")
+local Plugin = Grindon:GetModule("Plugin")
 local Gatherer = Plugin:NewModule("Gatherer", "AceConsole-3.0", "AceEvent-3.0")
 
-local Widget = Grinder:GetModule("Widget")
+local Widget = Grindon:GetModule("Widget")
 
-local L = AceLocale:GetLocale("Grinder_Gatherer")
+local L = AceLocale:GetLocale("Grindon_Gatherer")
 
 local spells = {
     GetSpellInfo(2575),
@@ -79,7 +79,7 @@ local defaults = {
 local options = {}
 
 function Gatherer:OnInitialize()
-    self.Database = Grinder.Database:RegisterNamespace("Gatherer", defaults)
+    self.Database = Grindon.Database:RegisterNamespace("Gatherer", defaults)
     --Plugin:RegisterConfig("Gatherer", options, 2, true)
 end
 
@@ -89,14 +89,14 @@ function Gatherer:OnEnable()
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
 
-    Grinder:ReserveIDs(ids)
+    Grindon:ReserveIDs(ids)
 end
 
 function Gatherer:OnDisable()
     self:UnregisterMessage("OnSegmentStart")
     self:UnregisterMessage("OnSegmentStop")
 
-    Grinder:UnreserveIDs(ids)
+    Grindon:UnreserveIDs(ids)
 end
 
 function Gatherer:OnSegmentStart()
@@ -114,7 +114,7 @@ end
 function Gatherer:OnSpellStart(_, unit, _, guid)
     if unit ~= "player" then return end
     local name = GetSpellInfo(guid)
-    if not Grinder:InArray(spells, name) then return end
+    if not Grindon:InArray(spells, name) then return end
 
     self.LastTarget = _G["GameTooltipTextLeft1"]:GetText()
 end
@@ -122,30 +122,30 @@ end
 function Gatherer:OnSpellSucceeded(_, unit, _, guid)
     if unit ~= "player" then return end
     local name = GetSpellInfo(guid)
-    if not Grinder:InArray(spells, name) then return end
+    if not Grindon:InArray(spells, name) then return end
 
-    self.Database.global.segments[Grinder.CurrentSegment].nodes[self.LastTarget].count = self.Database.global.segments[Grinder.CurrentSegment].nodes[self.LastTarget].count + 1
+    self.Database.global.segments[Grindon.CurrentSegment].nodes[self.LastTarget].count = self.Database.global.segments[Grindon.CurrentSegment].nodes[self.LastTarget].count + 1
 
     if Widget:ItemExists("Gatherer", L["CATEGORY_NODES"], self.LastTarget) then
-        Widget:UpdateItem("Gatherer", L["CATEGORY_NODES"], self.LastTarget, self.Database.global.segments[Grinder.CurrentSegment].nodes[self.LastTarget].count)
+        Widget:UpdateItem("Gatherer", L["CATEGORY_NODES"], self.LastTarget, self.Database.global.segments[Grindon.CurrentSegment].nodes[self.LastTarget].count)
     else
-        Widget:SetItem("Gatherer", L["CATEGORY_NODES"], self.LastTarget, nil, self.LastTarget, self.Database.global.segments[Grinder.CurrentSegment].nodes[self.LastTarget].count)
+        Widget:SetItem("Gatherer", L["CATEGORY_NODES"], self.LastTarget, nil, self.LastTarget, self.Database.global.segments[Grindon.CurrentSegment].nodes[self.LastTarget].count)
     end
 end
 
 function Gatherer:OnLootReceive(_, itemId, amount, name)
     local category
-    if Grinder:InArray(ids.mining, itemId) == true then
+    if Grindon:InArray(ids.mining, itemId) == true then
         category = L["CATEGORY_MINING"]
-    elseif Grinder:InArray(ids.herbalism, itemId) == true then
+    elseif Grindon:InArray(ids.herbalism, itemId) == true then
         category = L["CATEGORY_HERBALISM"]
-    elseif Grinder:InArray(ids.skinning, itemId) == true then
+    elseif Grindon:InArray(ids.skinning, itemId) == true then
         category = L["CATEGORY_SKINNING"]
     else return end
 
     if Widget:ItemExists("Gatherer", category, itemId) then
-        Widget:UpdateItem("Gatherer", category, itemId, Grinder:GetItemAmount(itemId))
+        Widget:UpdateItem("Gatherer", category, itemId, Grindon:GetItemAmount(itemId))
     else
-        Widget:SetItem("Gatherer", category, itemId, GetItemIcon(itemId), name, Grinder:GetItemAmount(itemId))
+        Widget:SetItem("Gatherer", category, itemId, GetItemIcon(itemId), name, Grindon:GetItemAmount(itemId))
     end
 end
