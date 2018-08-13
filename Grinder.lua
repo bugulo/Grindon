@@ -32,7 +32,6 @@ end
 
 function Grinder:ReserveIDs(idtable)
     for _, v in pairs(idtable) do
-        self:Print("RESERVING", v)
         if type(v) == "table" then
             self:ReserveIDs(v)
         else
