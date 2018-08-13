@@ -6,7 +6,7 @@ local Changelog = Grindon:NewModule("Changelog")
 local Config = Grindon:GetModule("Config")
 
 local list = {
-    ["v0.1 - 13.8.2018"] = {
+    ["v8.0.1-1 - 13.8.2018"] = {
         "Core Grindon functionality",
         "Start segments via /startgrind & stop it with /stopgrind",
         "Frequency meter in segment widget (items per minute)",
