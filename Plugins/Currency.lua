@@ -9,6 +9,9 @@ local defaults = {
     global = {
         segments = {
             ["*"] = {
+                ["*"] = {
+                    count = 0
+                },
                 money = 0
             }
         }
@@ -31,10 +34,12 @@ end
 
 function Currency:OnSegmentStart()
     self:RegisterEvent("CHAT_MSG_MONEY", "OnMoneyReceive")
+    self:RegisterEvent("CHAT_MSG_CURRENCY", "OnCurrencyReceive")
 end
 
 function Currency:OnSegmentStop()
     self:UnregisterEvent("CHAT_MSG_MONEY")
+    self:UnregisterEvent("CHAT_MSG_CURRENCY")
 end
 
 function Currency:OnMoneyReceive(_, msg)
@@ -59,5 +64,22 @@ function Currency:OnMoneyReceive(_, msg)
         Widget:UpdateItem("Currency", "General", "money", result)
     else
         Widget:SetItem("Currency", "General", "money", 133784, "Gold", result, false)
+    end
+end
+
+function Currency:OnCurrencyReceive(_, msg)
+    local id = string.match(msg, "Hcurrency:(%d+):")
+    local name = string.match(msg, "%[(.+)%]")
+    local count = string.match(msg, "x(%d+)")
+    if count == nil then count = 1 end
+
+    self.Database.global.segments[Grinder.CurrentSegment][id].count = self.Database.global.segments[Grinder.CurrentSegment][id].count + count
+
+    local _, _, texture = GetCurrencyInfo(id)
+
+    if Widget:ItemExists("Currency", "General", id) then
+        Widget:UpdateItem("Currency", "General", id, self.Database.global.segments[Grinder.CurrentSegment][id].count)
+    else
+        Widget:SetItem("Currency", "General", id, texture, name, self.Database.global.segments[Grinder.CurrentSegment][id].count)
     end
 end
