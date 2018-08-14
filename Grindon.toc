@@ -21,4 +21,6 @@ Modules\Issues.lua
 
 Plugins\Default\Default.xml
 Plugins\Currency\Currency.xml
-Plugins\Gatherer\Gatherer.xml
+Plugins\Professions\Mining\Mining.xml
+Plugins\Professions\Herbalism\Herbalism.xml
+Plugins\Professions\Skinning\Skinning.xml

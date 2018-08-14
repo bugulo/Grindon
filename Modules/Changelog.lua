@@ -18,7 +18,7 @@ local list = {
         "As Grindon is not covering many activies yet, default module is tracking all items you loot and placing them into categories\n",
         "Plugin/Currencies",
         "Track loot of all currencies and money\n",
-        "Plugin/Gatherer",
+        "Plugin/Professions",
         "Initial support for Battle for Azeroth and Legion",
         "Track loot of all gathering professions(Mining, Skinning, Herbalism)",
         "Count how many and which nodes did you take"

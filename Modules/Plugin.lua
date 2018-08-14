@@ -17,8 +17,10 @@ local options = {
 
 local defaults = {
     profile = {
+        ["Default"] = {enabled = true},
+        ["Currency"] = {enabled = true},
         ["*"] = {
-            enabled = true
+            enabled = false
         }
     }
 }
