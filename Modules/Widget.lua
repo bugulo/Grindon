@@ -1,3 +1,5 @@
+local Window = LibStub("LibWindow-1.1")
+
 local Grindon = LibStub("AceAddon-3.0"):GetAddon("Grindon")
 local Widget = Grindon:NewModule("Widget", "AceTimer-3.0", "AceConsole-3.0", "AceEvent-3.0")
 
@@ -33,6 +35,10 @@ local options = {
 
 local defaults = {
     profile = {
+        transform = {
+            sizeX = 250,
+            sizeY = 250,
+        },
         lockMove = false,
         lockSize = false,
         frequency = true,
@@ -54,7 +60,7 @@ end
 
 function Widget:OnSegmentStart()
     self.Time = 0
-    self.Timer = self:ScheduleRepeatingTimer("SegmentTimer", 2)
+    self.Timer = self:ScheduleRepeatingTimer("SegmentTimer", 1)
 
     self.Plugins = {}
 
@@ -70,30 +76,36 @@ function Widget:OnSegmentStop()
 end
 
 function Widget:CreateFrame()
-    self.Frame = CreateFrame("Frame", "GrindonWidget" , UIParent);
+    self.Frame = CreateFrame("Frame", "GrindonWidget" , UIParent)
     self.Frame:SetResizable(true)
     self.Frame:SetMovable(true)
     self.Frame:SetPoint("CENTER", UIParent)
-    self.Frame:SetSize(200, 200)
+    self.Frame:SetSize(self.Database.profile.transform.sizeX, self.Database.profile.transform.sizeY)
     self.Frame:SetMinResize(200, 200)
     self.Frame:SetClampedToScreen(true)
 
+    Window.RegisterConfig(self.Frame, self.Database.profile.transform)
+    Window.RestorePosition(self.Frame)
+
     local FrameBackground = self.Frame:CreateTexture(nil, "BACKGROUND")
     FrameBackground:SetColorTexture(0, 0, 0, 0.5)
-    FrameBackground:SetAllPoints(self.Frame);
+    FrameBackground:SetAllPoints(self.Frame)
 
-    self.Header = CreateFrame("Frame", "GrindonWidgetHeader" , self.Frame);
+    self.Header = CreateFrame("Frame", "GrindonWidgetHeader" , self.Frame)
     self.Header:EnableMouse(true)
     self.Header:SetPoint("TOPLEFT", self.Frame)
     self.Header:SetPoint("TOPRIGHT", self.Frame)
     self.Header:SetHeight(25)
     self.Header:RegisterForDrag("LeftButton")
     self.Header:SetScript("OnDragStart", function() if not Widget.Database.profile.lockMove then self.Frame:StartMoving() end end)
-    self.Header:SetScript("OnDragStop", function() self.Frame:StopMovingOrSizing() end)
+    self.Header:SetScript("OnDragStop", function()
+        self.Frame:StopMovingOrSizing()
+        Window.SavePosition(self.Frame)
+    end)
 
     local HeaderBackground = self.Header:CreateTexture(nil, "OVERLAY")
     HeaderBackground:SetColorTexture(0, 0, 0, 0.6)
-    HeaderBackground:SetAllPoints(self.Header);
+    HeaderBackground:SetAllPoints(self.Header)
 
     self.Header.Time = self.Header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     self.Header.Time:SetPoint("RIGHT", self.Header, -5, 0)
@@ -106,33 +118,38 @@ function Widget:CreateFrame()
     self.Header.Title:SetJustifyH("LEFT")
     self.Header.Title:SetHeight(20)
 
-    self.Content = CreateFrame("Frame", "GrindonWidgetContent" , self.Frame);
+    self.Content = CreateFrame("Frame", "GrindonWidgetContent" , self.Frame)
     --self.Content:EnableMouse(true)
     self.Content:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT", 5, -5)
     self.Content:SetPoint("BOTTOMRIGHT", self.Frame, -5, 5)
     self.Content:SetClipsChildren(true)
 
-    self.ContentTop = CreateFrame("Frame", "GrindonWidgetContentTop" , self.Content);
+    self.ContentTop = CreateFrame("Frame", "GrindonWidgetContentTop" , self.Content)
     self.ContentTop:SetPoint("TOPLEFT", self.Content)
     self.ContentTop:SetPoint("TOPRIGHT", self.Content)
     self.ContentTop:SetHeight(1)
 
     --local ContentBackground = self.Content:CreateTexture(nil, "BACKGROUND")
     --ContentBackground:SetColorTexture(0, 1, 0)
-    --ContentBackground:SetAllPoints(self.Content);
+    --ContentBackground:SetAllPoints(self.Content)
 
-    self.Anchor = CreateFrame("Frame", "GrindonWidgetAnchor", self.Frame);
+    self.Anchor = CreateFrame("Frame", "GrindonWidgetAnchor", self.Frame)
     self.Anchor:EnableMouse(true)
     self.Anchor:SetPoint("BOTTOMRIGHT", self.Frame, "BOTTOMRIGHT")
     self.Anchor:SetSize(30, 30)
     self.Anchor:RegisterForDrag("LeftButton")
+
     self.Anchor:SetScript("OnDragStart", function() if not Widget.Database.profile.lockSize then self.Frame:StartSizing() end end)
-    self.Anchor:SetScript("OnDragStop", function() self.Frame:StopMovingOrSizing() end)
+    self.Anchor:SetScript("OnDragStop", function()
+        self.Frame:StopMovingOrSizing()
+        Widget.Database.profile.transform.sizeX = self.Frame:GetWidth()
+        Widget.Database.profile.transform.sizeY = self.Frame:GetHeight()
+    end)
 
     local AnchorBackground = self.Anchor:CreateTexture(nil, "OVERLAY")
     AnchorBackground:SetTexture("Interface/Cursor/Item.blp")
     AnchorBackground:SetRotation(math.rad(-180))
-    AnchorBackground:SetAllPoints(self.Anchor);
+    AnchorBackground:SetAllPoints(self.Anchor)
 
     self.Content.Categories = {}
 
@@ -141,9 +158,9 @@ end
 
 function Widget:SegmentTimer()
     self.Time = self.Time + 1
-    local h = string.format("%02.f", math.floor(self.Time / 3600));
-    local m = string.format("%02.f", math.floor(self.Time / 60 - (h * 60)));
-    local s = string.format("%02.f", math.floor(self.Time - h * 3600 - m * 60));
+    local h = string.format("%02.f", math.floor(self.Time / 3600))
+    local m = string.format("%02.f", math.floor(self.Time / 60 - (h * 60)))
+    local s = string.format("%02.f", math.floor(self.Time - h * 3600 - m * 60))
     self.Header.Time:SetText(h .. ":" .. m .. ":" .. s)
 
     if Widget.Database.profile.frequency then self:UpdateFrequency() end
