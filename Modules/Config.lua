@@ -1,23 +1,31 @@
-local AceAddon = LibStub("AceAddon-3.0")
-local AceConfig = LibStub("AceConfig-3.0")
-local AceConfigDialog = LibStub("AceConfigDialog-3.0")
-local AceDBOptions = LibStub("AceDBOptions-3.0")
-
-local Grindon = AceAddon:GetAddon("Grindon")
+local Grindon = LibStub("AceAddon-3.0"):GetAddon("Grindon")
 local Config = Grindon:NewModule("Config", "AceConsole-3.0")
+
+local L = LibStub("AceLocale-3.0"):GetLocale("Grindon").Config
 
 local options = {
     type = "group",
-    args = {},
+    args = {
+        start = {
+            type = "execute",
+            name = L["StartSegment"],
+            func = function() Grindon:StartSegment() end
+        },
+        stop = {
+            type = "execute",
+            name = L["StopSegment"],
+            func = function() Grindon:StopSegment() end
+        }
+    },
     plugins = {}
 }
 
 function Config:OnInitialize()
-    options.args.profiles = AceDBOptions:GetOptionsTable(Grindon.Database)
-    options.args.profiles.order = 5
+    options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(Grindon.Database)
+    options.args.profiles.order = 4
 
-    AceConfig:RegisterOptionsTable("Grindon", options, "grinder")
-    AceConfigDialog:AddToBlizOptions("Grindon", "Grindon")
+    LibStub("AceConfig-3.0"):RegisterOptionsTable("Grindon", options, "grinder")
+    LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Grindon", "Grindon")
 end
 
 function Config:Register(name, args, order, disabled)

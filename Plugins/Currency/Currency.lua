@@ -1,6 +1,4 @@
-local AceAddon = LibStub("AceAddon-3.0")
-
-local Grindon = AceAddon:GetAddon("Grindon")
+local Grindon = LibStub("AceAddon-3.0"):GetAddon("Grindon")
 local Plugin = Grindon:GetModule("Plugin")
 local Currency = Plugin:NewModule("Currency", "AceConsole-3.0", "AceEvent-3.0")
 

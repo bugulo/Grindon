@@ -1,25 +1,30 @@
-local AceAddon = LibStub("AceAddon-3.0")
-
-local Grindon = AceAddon:GetAddon("Grindon")
+local Grindon = LibStub("AceAddon-3.0"):GetAddon("Grindon")
 local Widget = Grindon:NewModule("Widget", "AceTimer-3.0", "AceConsole-3.0", "AceEvent-3.0")
 
 local Config = Grindon:GetModule("Config")
 
+local L = LibStub("AceLocale-3.0"):GetLocale("Grindon").Widget
+
 local options = {
+    header = {
+        order = 0,
+        type = "header",
+        name = L["Header"]
+    },
     lockMove = {
-        name = "Lock Frame Moving",
+        name = L["LockMove"],
         type = "toggle",
         set = function(_, val) Widget.Database.profile.lockMove = val end,
         get = function() return Widget.Database.profile.lockMove end
     },
     lockSize = {
-        name = "Lock Frame Sizing",
+        name = L["LockSize"],
         type = "toggle",
         set = function(_, val) Widget.Database.profile.lockSize = val end,
         get = function() return Widget.Database.profile.lockSize end
     },
     frequency = {
-        name = "Allow frequency meter",
+        name = L["Frequency"],
         type = "toggle",
         set = function(_, val) Widget:ToggleFrequency(val) end,
         get = function() return Widget.Database.profile.frequency end
@@ -37,7 +42,7 @@ local defaults = {
 function Widget:OnInitialize()
     self.Database = Grindon.Database:RegisterNamespace("Widget", defaults)
 
-    Config:Register("Widget", options, 3)
+    Config:Register(L["ConfigName"], options, 2)
 
     self.FrameCache = {}
 
@@ -49,7 +54,7 @@ end
 
 function Widget:OnSegmentStart()
     self.Time = 0
-    self.Timer = self:ScheduleRepeatingTimer("SegmentTimer", 1)
+    self.Timer = self:ScheduleRepeatingTimer("SegmentTimer", 2)
 
     self.Plugins = {}
 
@@ -97,7 +102,7 @@ function Widget:CreateFrame()
     self.Header.Title = self.Header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     self.Header.Title:SetPoint("LEFT", self.Header, 5, 0)
     self.Header.Title:SetPoint("RIGHT", self.Header.Time, "LEFT")
-    self.Header.Title:SetText("Grindon Segment")
+    self.Header.Title:SetText(L["Title"])
     self.Header.Title:SetJustifyH("LEFT")
     self.Header.Title:SetHeight(20)
 

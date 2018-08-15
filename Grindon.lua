@@ -1,8 +1,6 @@
-local AceAddon = LibStub("AceAddon-3.0")
-local AceDB = LibStub("AceDB-3.0")
-local AceLocale = LibStub("AceLocale-3.0")
+local Grindon = LibStub("AceAddon-3.0"):NewAddon("Grindon", "AceConsole-3.0", "AceEvent-3.0")
 
-local Grindon = AceAddon:NewAddon("Grindon", "AceConsole-3.0", "AceEvent-3.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("Grindon").General
 
 local defaults = {
     global = {
@@ -21,8 +19,7 @@ local defaults = {
 }
 
 function Grindon:OnInitialize()
-    self.Locale = AceLocale:GetLocale("Grindon")
-    self.Database = AceDB:New("GrindonDB", defaults, true)
+    self.Database = LibStub("AceDB-3.0"):New("GrindonDB", defaults, true)
 
     self.Reserved = {}
 
@@ -56,7 +53,7 @@ end
 
 function Grindon:StartSegment()
     if self.CurrentSegment then
-        self:Print("Segment already started")
+        self:Print(L["SegmentAlreadyStarted"])
         return
     end
 
@@ -65,12 +62,12 @@ function Grindon:StartSegment()
     self.Database.global.segments[self.CurrentSegment].timeStart = time(date("!*t"))
 
     self:SendMessage("OnSegmentStart", self.CurrentSegment)
-    self:Print("Segment started")
+    self:Print(L["SegmentStarted"])
 end
 
 function Grindon:StopSegment()
     if self.CurrentSegment == nil then
-        self:Print("Segment not started")
+        self:Print(L["SegmentNotStarted"])
         return
     end
 
@@ -80,7 +77,7 @@ function Grindon:StopSegment()
     self.CurrentSegment = nil
 
     self:SendMessage("OnSegmentStop", id)
-    self:Print("Segment stopped")
+    self:Print(L["SegmentStopped"])
 end
 
 function Grindon:GetSegment()

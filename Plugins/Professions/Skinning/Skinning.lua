@@ -1,13 +1,12 @@
-local AceAddon = LibStub("AceAddon-3.0")
 local AceLocale = LibStub("AceLocale-3.0")
 
-local Grindon = AceAddon:GetAddon("Grindon")
+local Grindon = LibStub("AceAddon-3.0"):GetAddon("Grindon")
 local Plugin = Grindon:GetModule("Plugin")
 local Skinning = Plugin:NewModule("Professions_Skinning", "AceConsole-3.0", "AceEvent-3.0")
 
 local Widget = Grindon:GetModule("Widget")
 
-local L = AceLocale:GetLocale("Grindon_Professions_Skinning")
+local L = LibStub("AceLocale-3.0"):GetLocale("Grindon_Professions_Skinning")
 
 local ids = {
     -- BFA

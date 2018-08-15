@@ -1,10 +1,9 @@
-local AceAddon = LibStub("AceAddon-3.0")
-local AceConfig = LibStub("AceConfig-3.0")
-
-local Grindon = AceAddon:GetAddon("Grindon")
+local Grindon = LibStub("AceAddon-3.0"):GetAddon("Grindon")
 local Plugin = Grindon:NewModule("Plugin", "AceConsole-3.0", "AceEvent-3.0")
 
 local Config = Grindon:GetModule("Config")
+
+local L = LibStub("AceLocale-3.0"):GetLocale("Grindon").Plugin
 
 local options = {
     general = {
@@ -39,7 +38,7 @@ function Plugin:OnInitialize()
         if self.Database.profile[name].enabled then module:Enable() end
     end
 
-    Config:Register("Plugins", options, 4)
+    Config:Register(L["ConfigName"], options, 3)
 end
 
 function Plugin:RegisterConfig(name, args, order, disabled)
@@ -49,7 +48,6 @@ function Plugin:RegisterConfig(name, args, order, disabled)
         type = "group",
         disabled = disabled,
         order = order + 1,
-        childGroups = "select",
         name = name,
         args = args
     }
@@ -65,7 +63,7 @@ function Plugin:ToggleModule(name, value)
 
         self.Database.profile[name].enabled = value
     else
-        self:Print("Please stop segment before turning on/off new modules")
+        self:Print(L["SegmentStarted"])
     end
 end
 

@@ -1,13 +1,10 @@
-local AceAddon = LibStub("AceAddon-3.0")
-local AceLocale = LibStub("AceLocale-3.0")
-
-local Grindon = AceAddon:GetAddon("Grindon")
+local Grindon = LibStub("AceAddon-3.0"):GetAddon("Grindon")
 local Plugin = Grindon:GetModule("Plugin")
 local Herbalism = Plugin:NewModule("Professions_Herbalism", "AceConsole-3.0", "AceEvent-3.0")
 
 local Widget = Grindon:GetModule("Widget")
 
-local L = AceLocale:GetLocale("Grindon_Professions_Herbalism")
+local L = LibStub("AceLocale-3.0"):GetLocale("Grindon_Professions_Herbalism")
 
 local spell = GetSpellInfo(2366)
 
@@ -16,6 +13,10 @@ local ids = {
     152507, -- Akunda's Bite
     152510, -- Anchor Weed
     152505, -- Riverbud
+    152511, -- Sea Stalk
+    152506, -- Star Moss
+    152508, -- Winter's Kiss
+    152509, -- Siren's Pollen
     -- LEGION
     124101, -- Aethril,
     124102, -- Dreamleaf
@@ -24,8 +25,6 @@ local ids = {
     124105, -- Starlight Rose
     124106, -- Felwort
     151565, -- Astral Glory
-    152506, -- Star Moss
-    152508, -- Winter's Kiss
 }
 
 local defaults = {
