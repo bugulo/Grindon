@@ -8,36 +8,133 @@ local Config = Grindon:GetModule("Config")
 local L = LibStub("AceLocale-3.0"):GetLocale("Grindon").Widget
 
 local options = {
-    header = {
+    show_widget = {
         order = 0,
+        type = "execute",
+        name = L["ToggleWidget"],
+        func = function()
+            if Widget.Frame:IsShown() then
+                Widget.Frame:Hide()
+            else
+                Widget.Frame:Show()
+            end
+        end
+    },
+    reset_widget = {
+        order = 1,
+        type = "execute",
+        name = L["ResetWidget"],
+        func = function() Widget:ResetSettings() end
+    },
+    header = {
+        order = 1,
         type = "header",
         name = L["Header"]
     },
     lockMove = {
+        order = 2,
         name = L["LockMove"],
         type = "toggle",
         set = function(_, val) Widget.Database.profile.lockMove = val end,
         get = function() return Widget.Database.profile.lockMove end
     },
     lockSize = {
+        order = 3,
         name = L["LockSize"],
         type = "toggle",
         set = function(_, val) Widget.Database.profile.lockSize = val end,
         get = function() return Widget.Database.profile.lockSize end
     },
     frequency = {
+        order = 4,
         name = L["Frequency"],
         type = "toggle",
         set = function(_, val) Widget:ToggleFrequency(val) end,
         get = function() return Widget.Database.profile.frequency end
+    },
+    header_color = {
+        order = 5,
+        name = L["HeaderColor"],
+        type = "color",
+        hasAlpha = true,
+        set = function(_, r, g, b, a)
+            if r == nil or g == nil or b == nil then return end
+            Widget.Database.profile.colors.header.bg.r = r
+            Widget.Database.profile.colors.header.bg.g = g
+            Widget.Database.profile.colors.header.bg.b = b
+            Widget.Database.profile.colors.header.bg.a = a
+            Widget.HeaderBackground:SetColorTexture(r, g, b, a)
+        end,
+        get = function()
+            local color = Widget.Database.profile.colors.header.bg
+            return color.r , color.g, color.b, color.a
+        end
+    },
+    header_text_color = {
+        order = 6,
+        name = L["HeaderTextColor"],
+        type = "color",
+        set = function(_, r, g, b)
+            if r == nil or g == nil or b == nil then return end
+            Widget.Database.profile.colors.header.text.r = r
+            Widget.Database.profile.colors.header.text.g = g
+            Widget.Database.profile.colors.header.text.b = b
+            Widget.Header.Title:SetTextColor(r, g, b)
+            Widget.Header.Time:SetTextColor(r, g, b)
+        end,
+        get = function()
+            local color = Widget.Database.profile.colors.header.text
+            return color.r , color.g, color.b
+        end
+    },
+    content_color = {
+        order = 7,
+        name = L["ContentColor"],
+        type = "color",
+        hasAlpha = true,
+        set = function(_, r, g, b, a)
+            if r == nil or g == nil or b == nil then return end
+            Widget.Database.profile.colors.content.bg.r = r
+            Widget.Database.profile.colors.content.bg.g = g
+            Widget.Database.profile.colors.content.bg.b = b
+            Widget.Database.profile.colors.content.bg.a = a
+            Widget.ContentBackground:SetColorTexture(r, g, b, a)
+        end,
+        get = function()
+            local color = Widget.Database.profile.colors.content.bg
+            return color.r , color.g, color.b, color.a
+        end
+    },
+    scale = {
+        order = 8,
+        name = L["Scale"],
+        type = "range",
+        min = 0.5,
+        max = 1.5,
+        set = function(_, val) Window.SetScale(Widget.Frame, val) end,
+        get = function() return Widget.Database.profile.transform.scale end,
+        isPercent = true
     }
 }
 
 local defaults = {
     profile = {
         transform = {
+            x = 0,
+            y = 0,
             sizeX = 250,
             sizeY = 250,
+            scale = 1,
+            point = "CENTER"
+        },
+        colors = {
+            header = {
+                bg = {r = 0, g = 0, b = 0, a = 0.8},
+                text = {r = 1.0, g = 0.82, b = 0}
+            },
+            content = {
+                bg = {r = 0, g = 0, b = 0, a = 0.5}
+            },
         },
         lockMove = false,
         lockSize = false,
@@ -52,6 +149,7 @@ function Widget:OnInitialize()
 
     self.FrameCache = {}
 
+    self:RegisterMessage("OnProfileChanged", "OnProfileChanged")
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
 
@@ -72,6 +170,7 @@ function Widget:OnSegmentStop()
 
     self:Clean()
     self.Plugins = nil
+
     self.Frame:Hide()
 end
 
@@ -87,11 +186,7 @@ function Widget:CreateFrame()
     Window.RegisterConfig(self.Frame, self.Database.profile.transform)
     Window.RestorePosition(self.Frame)
 
-    local FrameBackground = self.Frame:CreateTexture(nil, "BACKGROUND")
-    FrameBackground:SetColorTexture(0, 0, 0, 0.5)
-    FrameBackground:SetAllPoints(self.Frame)
-
-    self.Header = CreateFrame("Frame", "GrindonWidgetHeader" , self.Frame)
+    self.Header = CreateFrame("Frame", nil, self.Frame)
     self.Header:EnableMouse(true)
     self.Header:SetPoint("TOPLEFT", self.Frame)
     self.Header:SetPoint("TOPRIGHT", self.Frame)
@@ -103,13 +198,15 @@ function Widget:CreateFrame()
         Window.SavePosition(self.Frame)
     end)
 
-    local HeaderBackground = self.Header:CreateTexture(nil, "OVERLAY")
-    HeaderBackground:SetColorTexture(0, 0, 0, 0.6)
-    HeaderBackground:SetAllPoints(self.Header)
+    local colors = Widget.Database.profile.colors
+    self.HeaderBackground = self.Header:CreateTexture(nil, "OVERLAY")
+    self.HeaderBackground:SetColorTexture(colors.header.bg.r, colors.header.bg.g, colors.header.bg.b, colors.header.bg.a)
+    self.HeaderBackground:SetAllPoints(self.Header)
 
     self.Header.Time = self.Header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     self.Header.Time:SetPoint("RIGHT", self.Header, -5, 0)
     self.Header.Time:SetText("00:00:00")
+    self.Header.Time:SetTextColor(colors.header.text.r, colors.header.text.g, colors.header.text.b)
 
     self.Header.Title = self.Header:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     self.Header.Title:SetPoint("LEFT", self.Header, 5, 0)
@@ -117,23 +214,24 @@ function Widget:CreateFrame()
     self.Header.Title:SetText(L["Title"])
     self.Header.Title:SetJustifyH("LEFT")
     self.Header.Title:SetHeight(20)
+    self.Header.Title:SetTextColor(colors.header.text.r, colors.header.text.g, colors.header.text.b)
 
-    self.Content = CreateFrame("Frame", "GrindonWidgetContent" , self.Frame)
-    --self.Content:EnableMouse(true)
+    self.Content = CreateFrame("Frame", nil, self.Frame)
     self.Content:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT", 5, -5)
     self.Content:SetPoint("BOTTOMRIGHT", self.Frame, -5, 5)
     self.Content:SetClipsChildren(true)
 
-    self.ContentTop = CreateFrame("Frame", "GrindonWidgetContentTop" , self.Content)
+    self.ContentTop = CreateFrame("Frame", nil, self.Content)
     self.ContentTop:SetPoint("TOPLEFT", self.Content)
     self.ContentTop:SetPoint("TOPRIGHT", self.Content)
     self.ContentTop:SetHeight(1)
 
-    --local ContentBackground = self.Content:CreateTexture(nil, "BACKGROUND")
-    --ContentBackground:SetColorTexture(0, 1, 0)
-    --ContentBackground:SetAllPoints(self.Content)
+    self.ContentBackground = self.Frame:CreateTexture(nil, "BACKGROUND")
+    self.ContentBackground:SetColorTexture(colors.content.bg.r, colors.content.bg.g, colors.content.bg.b, colors.content.bg.a)
+    self.ContentBackground:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT")
+    self.ContentBackground:SetPoint("BOTTOMRIGHT", self.Frame)
 
-    self.Anchor = CreateFrame("Frame", "GrindonWidgetAnchor", self.Frame)
+    self.Anchor = CreateFrame("Frame", nil, self.Frame)
     self.Anchor:EnableMouse(true)
     self.Anchor:SetPoint("BOTTOMRIGHT", self.Frame, "BOTTOMRIGHT")
     self.Anchor:SetSize(30, 30)
@@ -451,4 +549,22 @@ function Widget:ToggleFrequency(val)
     end
 
     Widget.Database.profile.frequency = val
+end
+
+function Widget:OnProfileChanged()
+    Window.RegisterConfig(self.Frame, self.Database.profile.transform)
+    Window.RestorePosition(self.Frame)
+    self.Frame:SetSize(self.Database.profile.transform.sizeX, self.Database.profile.transform.sizeY)
+
+    local colors = Widget.Database.profile.colors
+    self.HeaderBackground:SetColorTexture(colors.header.bg.r, colors.header.bg.g, colors.header.bg.b, colors.header.bg.a)
+    self.ContentBackground:SetColorTexture(colors.content.bg.r, colors.content.bg.g, colors.content.bg.b, colors.content.bg.a)
+    self.Header.Title:SetTextColor(colors.header.text.r, colors.header.text.g, colors.header.text.b)
+    self.Header.Time:SetTextColor(colors.header.text.r, colors.header.text.g, colors.header.text.b)
+end
+
+function Widget:ResetSettings()
+    self.Database:ResetProfile()
+
+    self:OnProfileChanged()
 end

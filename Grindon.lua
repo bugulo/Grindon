@@ -20,11 +20,22 @@ local defaults = {
 
 function Grindon:OnInitialize()
     self.Database = LibStub("AceDB-3.0"):New("GrindonDB", defaults, true)
+    self.Database.RegisterCallback(self, "OnProfileChanged", "ProfileChanged")
+    self.Database.RegisterCallback(self, "OnProfileCopied", "ProfileChanged")
+    self.Database.RegisterCallback(self, "OnProfileReset", "ProfileChanged")
 
     self.Reserved = {}
 
     self:RegisterChatCommand("startgrind", "StartSegment")
     self:RegisterChatCommand("stopgrind", "StopSegment")
+end
+
+function Grindon:ProfileChanged()
+    if self.CurrentSegment then
+        self:StopSegment()
+        self:Print(L["ProfileChanged"])
+    end
+    self:SendMessage("OnProfileChanged")
 end
 
 function Grindon:ReserveIDs(idtable)

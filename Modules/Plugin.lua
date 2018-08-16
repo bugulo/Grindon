@@ -27,6 +27,8 @@ local defaults = {
 function Plugin:OnInitialize()
     self.Database = Grindon.Database:RegisterNamespace("Plugins", defaults)
 
+    self:RegisterMessage("OnProfileChanged", "OnProfileChanged")
+
     for name, module in self:IterateModules() do
         options.general.args[name] = {
             name = name,
@@ -39,6 +41,16 @@ function Plugin:OnInitialize()
     end
 
     Config:Register(L["ConfigName"], options, 3)
+end
+
+function Plugin:OnProfileChanged()
+    for name, module in self:IterateModules() do
+        if self.Database.profile[name].enabled then
+            if not module:IsEnabled() then module:Enable() end
+        else
+            if module:IsEnabled() then module:Disable() end
+        end
+    end
 end
 
 function Plugin:RegisterConfig(name, args, order, disabled)

@@ -4,7 +4,8 @@ L.General = {
     ["SegmentAlreadyStarted"] = "Segment already started",
     ["SegmentNotStarted"] = "Segment not started",
     ["SegmentStarted"] = "Segment started",
-    ["SegmentStopped"] = "Segment stopped"
+    ["SegmentStopped"] = "Segment stopped",
+    ["ProfileChanged"] = "Segment was stopped due to profile change"
 }
 
 L.Core = {
@@ -27,11 +28,17 @@ L.Plugin = {
 
 L.Widget = {
     ["ConfigName"] = "Widget",
+    ["ToggleWidget"] = "Toggle widget",
+    ["ResetWidget"] = "Reset widget",
     ["Header"] = "Widget Options",
     ["LockMove"] = "Lock frame moving",
     ["LockSize"] = "Lock frame sizing",
     ["Frequency"] = "Enable frequency",
-    ["Title"] = "Grindon segment"
+    ["Title"] = "Grindon segment",
+    ["Scale"] = "Scale",
+    ["HeaderColor"] = "Header background",
+    ["HeaderTextColor"] = "Header text color",
+    ["ContentColor"] = "Content background"
 }
 
 L.History = {

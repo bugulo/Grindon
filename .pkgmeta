@@ -8,6 +8,9 @@ externals:
     Libs/LibWindow-1.1:
         url: svn://svn.wowace.com/wow/libwindow-1-1/mainline/trunk/LibWindow-1.1
         tag: latest
+    Libs/CallbackHandler-1.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/CallbackHandler-1.0
+        tag: latest
     Libs/Ace3/AceAddon-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
         tag: latest
