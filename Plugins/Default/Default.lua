@@ -4,8 +4,6 @@ local Default = Plugin:NewModule("Default", "AceConsole-3.0", "AceEvent-3.0")
 
 local Widget = Grindon:GetModule("Widget")
 
-local options = {}
-
 function Default:OnInitialize()
     --Plugin:RegisterConfig("Default", options, 0, true)
 end
@@ -28,14 +26,10 @@ function Default:OnSegmentStop()
     self:UnregisterMessage("OnLootReceive")
 end
 
-function Default:OnLootReceive(_, itemId, amount, name)
-    if Grindon:IsReserved(itemId) == true then return end
+function Default:OnLootReceive(_, itemId, _, name)
+    if Grindon.Reserved[itemId] == true then return end
 
     local _, itemType = GetItemInfoInstant(itemId)
 
-    if Widget:ItemExists("Default", itemType, itemId) then
-        Widget:UpdateItem("Default", itemType, itemId, Grindon:GetItemAmount(itemId))
-    else
-        Widget:SetItem("Default", itemType, itemId, GetItemIcon(itemId), name, Grindon:GetItemAmount(itemId))
-    end
+    Widget:SetItem("Default/" .. itemType, itemId, GetItemIcon(itemId), name, Grindon:GetItemAmount(itemId))
 end

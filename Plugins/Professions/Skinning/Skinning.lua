@@ -30,14 +30,14 @@ function Skinning:OnEnable()
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
 
-    Grindon:ReserveIDs(ids)
+    Grindon:ReserveIDs(ids, true)
 end
 
 function Skinning:OnDisable()
     self:UnregisterMessage("OnSegmentStart")
     self:UnregisterMessage("OnSegmentStop")
 
-    Grindon:UnreserveIDs(ids)
+    Grindon:ReserveIDs(ids, false)
 end
 
 function Skinning:OnSegmentStart()
@@ -51,9 +51,5 @@ end
 function Skinning:OnLootReceive(_, itemId, amount, name)
     if Grindon:InArray(ids, itemId) == false then return end
 
-    if Widget:ItemExists(L["PluginName"], L["Default"], itemId) then
-        Widget:UpdateItem(L["PluginName"], L["Default"], itemId, Grindon:GetItemAmount(itemId))
-    else
-        Widget:SetItem(L["PluginName"], L["Default"], itemId, GetItemIcon(itemId), name, Grindon:GetItemAmount(itemId))
-    end
+    Widget:SetItem(L["PluginName"], itemId, GetItemIcon(itemId), name, Grindon:GetItemAmount(itemId))
 end

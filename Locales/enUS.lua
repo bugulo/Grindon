@@ -11,7 +11,10 @@ L.General = {
 L.Core = {
     ["ConfigName"] = "General",
     ["Notice"] = "Notice",
-    ["NoticeContent"] = "Please keep in mind that Grindon is in an early stage of development. Although core parts of Grindon are done, there are not many plugins right now and customization of specific features is weak as of now. Grindon is currently localized only into enUS locale. You can read more information on the project page.",
+    ["NoticeContent"] =
+            "Please keep in mind that Grindon is in an early stage of development. Although core parts of Grindon are done" ..
+            "there are not many plugins right now and customization of specific features is weak as of now. Grindon is currently" ..
+            "localized only into enUS locale. You can read more information on the project page.",
     ["Header"] = "General Options",
     ["GroupLoot"] = "Enable group loot"
 }

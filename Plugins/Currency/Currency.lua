@@ -17,8 +17,6 @@ local defaults = {
     }
 }
 
-local options = {}
-
 function Currency:OnInitialize()
     self.Database = Grindon.Database:RegisterNamespace("Currency", defaults)
     --Plugin:RegisterConfig("Currency", options, 1, true)
@@ -65,7 +63,7 @@ function Currency:OnMoneyReceive(_, msg)
     if Widget:ItemExists("Currency", "General", "money") then
         Widget:UpdateItem("Currency", "General", "money", result)
     else
-        Widget:SetItem("Currency", "General", "money", 133784, "Gold", result, false)
+        Widget:SetItem("Currency", "money", 133784, "Gold", result, false)
     end
 end
 
@@ -79,9 +77,6 @@ function Currency:OnCurrencyReceive(_, msg)
 
     local _, _, texture = GetCurrencyInfo(id)
 
-    if Widget:ItemExists("Currency", "General", id) then
-        Widget:UpdateItem("Currency", "General", id, self.Database.global.segments[Grindon.CurrentSegment][id].count)
-    else
-        Widget:SetItem("Currency", "General", id, texture, name, self.Database.global.segments[Grindon.CurrentSegment][id].count)
-    end
+
+    Widget:SetItem("Currency", id, texture, name, self.Database.global.segments[Grindon.CurrentSegment][id].count)
 end

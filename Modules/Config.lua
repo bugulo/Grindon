@@ -29,8 +29,6 @@ function Config:OnInitialize()
 end
 
 function Config:Register(name, args, order, disabled)
-    if disabled == nil then disabled = false end
-
     options.plugins[name] = {
         [name] = {
             type = "group",

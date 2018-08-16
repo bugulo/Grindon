@@ -160,7 +160,10 @@ function Widget:OnSegmentStart()
     self.Time = 0
     self.Timer = self:ScheduleRepeatingTimer("SegmentTimer", 1)
 
-    self.Plugins = {}
+    self.Tree = {
+        Categories = {},
+        Items = {}
+    }
 
     self.Frame:Show()
 end
@@ -168,8 +171,12 @@ end
 function Widget:OnSegmentStop()
     self:CancelTimer(self.Timer)
 
-    self:Clean()
-    self.Plugins = nil
+    self.Header.Time:SetText("00:00:00")
+    self:CleanCategory(self.Tree)
+    self.Tree = {
+        Categories = {},
+        Items = {}
+    }
 
     self.Frame:Hide()
 end
@@ -261,46 +268,49 @@ function Widget:SegmentTimer()
     local s = string.format("%02.f", math.floor(self.Time - h * 3600 - m * 60))
     self.Header.Time:SetText(h .. ":" .. m .. ":" .. s)
 
-    if Widget.Database.profile.frequency then self:UpdateFrequency() end
+    if Widget.Database.profile.frequency then self:UpdateFrequency(self.Tree) end
 end
 
-function Widget:SetItem(plugin, category, id, icon, name, amount, frequency)
+function Widget:SetItem(path, id, icon, name, amount, frequency)
     if frequency == nil then frequency = true end
 
-    if self.Plugins[plugin] == nil then
-        local frameID = self:FindCategoryFrame(self.Content)
-        --self:Print("PLUG", frameID)
-        self.Plugins[plugin] = {
-            Frame = frameID,
-            Active = true,
-            Categories = {}
-        }
-        self.FrameCache[frameID]:SetScript("OnMouseDown", function(_, button) if button == "LeftButton" then self:TogglePlugin(plugin) end end)
-        self.FrameCache[frameID].Icon:SetPoint("LEFT", self.FrameCache[frameID])
-        self.FrameCache[frameID].Text:SetText(plugin)
+    local categories = Grindon:Split(path, "/")
+
+    local category = self.Tree
+    local parent = self.Content
+    for i, name in pairs(categories) do
+        if not category.Categories[name] then
+            local frameID = self:FindCategoryFrame(parent)
+            category.Categories[name] = {
+                Frame = frameID,
+                Active = true,
+                Categories = {},
+                Items = {}
+            }
+            parent = self.FrameCache[frameID]
+
+            self.FrameCache[frameID]:SetScript("OnMouseDown", function(_, button) if button == "LeftButton" then self:ToggleCategory(path, i) end end)
+            self.FrameCache[frameID].Text:SetText(name)
+        else
+            parent = self.FrameCache[category.Categories[name].Frame]
+        end
+        category = category.Categories[name]
     end
 
-    if self.Plugins[plugin].Categories[category] == nil then
-        local frameID = self:FindCategoryFrame(self.FrameCache[self.Plugins[plugin].Frame])
-        --self:Print("CAT", frameID)
-        self.Plugins[plugin].Categories[category] = {
-            Frame = frameID,
-            Active = true,
-            --Ignore = {},
-            Items = {}
-        }
-        self.FrameCache[frameID]:SetScript("OnMouseDown", function(_, button) if button == "LeftButton" then self:ToggleCategory(plugin, category) end end)
-        self.FrameCache[frameID].Icon:SetPoint("LEFT", self.FrameCache[frameID], 10, 0)
-        self.FrameCache[frameID].Text:SetText(category)
+    if category.Items[id] ~= nil then
+        local item = category.Items[id]
+
+        item.Amount = amount
+        item.Frequency = frequency
+
+        self.FrameCache[item.Frame].Icon:SetTexture(icon)
+        self.FrameCache[item.Frame].Amount:SetText(amount)
+        self.FrameCache[item.Frame].Name:SetText(name)
+        return
     end
 
-    --if self.Plugins[plugin].Categories[category].Ignore[id] then return end
-
-    self:RemoveItem(plugin, category, id)
-    local frameID = self:FindItemFrame(self.FrameCache[self.Plugins[plugin].Categories[category].Frame])
-    --self:Print("ITEM", frameID)
-    self.FrameCache[frameID]:SetScript("OnMouseDown", function(_, button) if button == "RightButton" then self:IgnoreItem(plugin, category, id) end end)
-    self.Plugins[plugin].Categories[category].Items[id] = {
+    local frameID = self:FindItemFrame(parent)
+    category.Items[id] = {
         Frame = frameID,
         Icon = icon,
         Name = name,
@@ -308,22 +318,12 @@ function Widget:SetItem(plugin, category, id, icon, name, amount, frequency)
         Frequency = frequency
     }
 
+    self.FrameCache[frameID]:SetScript("OnMouseDown", function(_, button) if button == "RightButton" then self:RemoveItem(category, id) end end)
     self.FrameCache[frameID].Icon:SetTexture(icon)
     self.FrameCache[frameID].Amount:SetText(amount)
     self.FrameCache[frameID].Name:SetText(name)
 
     self:Recalculate()
-end
-
-function Widget:UpdateItem(plugin, category, id, amount)
-    local frameID = self.Plugins[plugin].Categories[category].Items[id].Frame
-
-    self.Plugins[plugin].Categories[category].Items[id].Amount = amount
-    self.FrameCache[frameID].Amount:SetText(amount)
-end
-
-function Widget:ItemExists(plugin, category, id)
-    return (self.Plugins[plugin] ~= nil and self.Plugins[plugin].Categories[category] ~= nil and self.Plugins[plugin].Categories[category].Items[id] ~= nil)
 end
 
 function Widget:RemoveCategory(plugin, category, id)
@@ -339,17 +339,9 @@ function Widget:RemoveCategory(plugin, category, id)
     self:Recalculate()
 end
 
-function Widget:RemoveItem(plugin, category, id)
-    if self.Plugins[plugin].Categories[category].Items[id] == nil then return end
-
-    self:CleanItem(self.Plugins[plugin].Categories[category].Items[id].Frame)
-
-    self.Plugins[plugin].Categories[category].Items[id] = nil
-    self:Recalculate()
-end
-
-function Widget:IgnoreItem(plugin, category, id)
-    self:RemoveItem(plugin, category, id)
+function Widget:RemoveItem(category, id)
+    self:CleanItem(category.Items[id].Frame)
+    category.Items[id] = nil
     self:Recalculate()
 end
 
@@ -397,7 +389,7 @@ function Widget:FindItemFrame(parent)
 
     self.FrameCache[id].Icon = self.FrameCache[id]:CreateTexture(nil, "OVERLAY")
     self.FrameCache[id].Icon:SetSize(15, 15)
-    self.FrameCache[id].Icon:SetPoint("LEFT", self.FrameCache[id], 25, 0)
+    self.FrameCache[id].Icon:SetPoint("LEFT", self.FrameCache[id])
 
     self.FrameCache[id].Amount = self.FrameCache[id]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     self.FrameCache[id].Amount:SetPoint("RIGHT", self.FrameCache[id])
@@ -420,111 +412,95 @@ function Widget:FindItemFrame(parent)
     return id
 end
 
-function Widget:TogglePlugin(plugin)
-    for _, category in pairs(self.Plugins[plugin].Categories) do
-        if self.Plugins[plugin].Active then
-            self.FrameCache[category.Frame]:Hide()
-        else
-            self.FrameCache[category.Frame]:Show()
-        end
-    end
-    self.Plugins[plugin].Active = not self.Plugins[plugin].Active
+function Widget:ToggleCategory(path, offset)
+    local categories = Grindon:Split(path, "/")
 
-    if self.Plugins[plugin].Active then
-        self.FrameCache[self.Plugins[plugin].Frame].Icon:SetRotation(math.rad(-90))
-    else
-        self.FrameCache[self.Plugins[plugin].Frame].Icon:SetRotation(0)
+    local target = self.Tree
+    for i = 1, offset, 1
+    do
+        target = target.Categories[categories[i]]
     end
 
-    self:Recalculate()
-end
-
-function Widget:ToggleCategory(plugin, category)
-    for _, item in pairs(self.Plugins[plugin].Categories[category].Items) do
-        if self.Plugins[plugin].Categories[category].Active then
+    for _, item in pairs(target.Items) do
+        if target.Active then
             self.FrameCache[item.Frame]:Hide()
         else
             self.FrameCache[item.Frame]:Show()
         end
     end
-    self.Plugins[plugin].Categories[category].Active = not self.Plugins[plugin].Categories[category].Active
 
-    if self.Plugins[plugin].Categories[category].Active then
-        self.FrameCache[self.Plugins[plugin].Categories[category].Frame].Icon:SetRotation(math.rad(-90))
+    for _, category in pairs(target.Categories) do
+        if target.Active then
+            self.FrameCache[category.Frame]:Hide()
+        else
+            self.FrameCache[category.Frame]:Show()
+        end
+    end
+
+    target.Active = not target.Active
+
+    if target.Active then
+        self.FrameCache[target.Frame].Icon:SetRotation(math.rad(-90))
     else
-        self.FrameCache[self.Plugins[plugin].Categories[category].Frame].Icon:SetRotation(0)
+        self.FrameCache[target.Frame].Icon:SetRotation(0)
     end
 
     self:Recalculate()
 end
 
 function Widget:Recalculate()
-    local lastItem = self.ContentTop
-    for _, plugin in pairs(self.Plugins) do
-        self.FrameCache[plugin.Frame]:SetPoint("TOPLEFT", lastItem, "BOTTOMLEFT")
-        self.FrameCache[plugin.Frame]:SetPoint("TOPRIGHT", lastItem, "BOTTOMRIGHT")
-        self.FrameCache[plugin.Frame]:Show()
-        lastItem = self.FrameCache[plugin.Frame]
-
-        if plugin.Active then
-            for _, category in pairs(plugin.Categories) do
-                self.FrameCache[category.Frame]:SetPoint("TOPLEFT", lastItem, "BOTTOMLEFT")
-                self.FrameCache[category.Frame]:SetPoint("TOPRIGHT", lastItem, "BOTTOMRIGHT")
-                self.FrameCache[category.Frame]:Show()
-                lastItem = self.FrameCache[category.Frame]
-
-                if category.Active then
-                    for _, item in pairs(category.Items) do
-                        self.FrameCache[item.Frame]:SetPoint("TOPLEFT", lastItem, "BOTTOMLEFT")
-                        self.FrameCache[item.Frame]:SetPoint("TOPRIGHT", lastItem, "BOTTOMRIGHT")
-                        self.FrameCache[item.Frame]:Show()
-                        lastItem = self.FrameCache[item.Frame]
-                    end
-                end
-            end
-        end
-    end
+    self.LastParent = self.ContentTop
+    self:RecalculateCategory(self.Tree, 0)
 end
 
-function Widget:UpdateFrequency()
-    for pluginName, plugin in pairs(self.Plugins) do
-        if plugin.Active then
-            for categoryName, category in pairs(plugin.Categories) do
-                if category.Active then
-                    for name, item in pairs(category.Items) do
-                        if self.Plugins[pluginName].Categories[categoryName].Items[name].Frequency then
-                            local amount = self.Plugins[pluginName].Categories[categoryName].Items[name].Amount
-                            local frequency = string.format("%.2f", (amount * 60) / self.Time):gsub("%.?0+$", "")
-                            self.FrameCache[item.Frame].Frequency:SetText(frequency .. "/m")
-                        end
-                    end
-                end
-            end
-        end
-    end
-end
+function Widget:RecalculateCategory(category, offset)
+    for _, category in pairs(category.Categories) do
+        self.FrameCache[category.Frame]:SetPoint("TOP", self.LastParent, "BOTTOM")
+        self.FrameCache[category.Frame]:SetPoint("LEFT", self.Content, offset, 0)
+        self.FrameCache[category.Frame]:SetPoint("RIGHT", self.Content)
+        self.FrameCache[category.Frame]:Show()
+        self.LastParent = self.FrameCache[category.Frame]
 
-function Widget:Clean()
-    self.Header.Time:SetText("00:00:00")
-
-    for _, plugin in pairs(self.Plugins) do
-        self:CleanCategory(plugin.Frame)
-
-        for _, category in pairs(plugin.Categories) do
-            self:CleanCategory(category.Frame)
+        if category.Active then
 
             for _, item in pairs(category.Items) do
-                self:CleanItem(item.Frame)
+                self.FrameCache[item.Frame]:SetPoint("TOP", self.LastParent, "BOTTOM")
+                self.FrameCache[item.Frame]:SetPoint("LEFT", self.Content, offset + 10, 0)
+                self.FrameCache[item.Frame]:SetPoint("RIGHT", self.Content)
+                self.FrameCache[item.Frame]:Show()
+                self.LastParent = self.FrameCache[item.Frame]
             end
+
+            self:RecalculateCategory(category, offset + 10)
         end
     end
 end
 
-function Widget:CleanCategory(frame)
-    self.FrameCache[frame]:SetScript("OnMouseDown", nil)
-    self.FrameCache[frame].Text:SetText(nil)
-    self.FrameCache[frame].Taken = false
-    self.FrameCache[frame]:Hide()
+function Widget:UpdateFrequency(category)
+    for _, category in pairs(category.Categories) do
+        for _, item in pairs(category.Items) do
+            if item.Frequency then
+                local frequency = string.format("%.2f", (item.Amount * 60) / self.Time):gsub("%.?0+$", "")
+                self.FrameCache[item.Frame].Frequency:SetText(frequency .. "/m")
+            end
+        end
+        self:UpdateFrequency(category)
+    end
+end
+
+function Widget:CleanCategory(category)
+    for _, category in pairs(category.Categories) do
+        self.FrameCache[category.Frame]:SetScript("OnMouseDown", nil)
+        self.FrameCache[category.Frame].Text:SetText(nil)
+        self.FrameCache[category.Frame].Taken = false
+        self.FrameCache[category.Frame]:Hide()
+
+        for _, item in pairs(category.Items) do
+            self:CleanItem(item.Frame)
+        end
+
+        self:CleanCategory(category)
+    end
 end
 
 function Widget:CleanItem(frame)
@@ -539,16 +515,19 @@ end
 
 function Widget:ToggleFrequency(val)
     if val == false then
-        for _, plugin in pairs(self.Plugins) do
-            for _, category in pairs(plugin.Categories) do
-                for _, item in pairs(category.Items) do
-                    self.FrameCache[item.Frame].Frequency:SetText(nil)
-                end
-            end
-        end
+        self:CleanFrequency(self.Tree)
     end
 
     Widget.Database.profile.frequency = val
+end
+
+function Widget:CleanFrequency(category)
+    for _, category in pairs(category.Categories) do
+        for _, item in pairs(category.Items) do
+            self.FrameCache[item.Frame].Frequency:SetText(nil)
+        end
+        self:CleanFrequency(category)
+    end
 end
 
 function Widget:OnProfileChanged()

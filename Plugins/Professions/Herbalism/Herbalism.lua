@@ -51,14 +51,14 @@ function Herbalism:OnEnable()
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
 
-    Grindon:ReserveIDs(ids)
+    Grindon:ReserveIDs(ids, true)
 end
 
 function Herbalism:OnDisable()
     self:UnregisterMessage("OnSegmentStart")
     self:UnregisterMessage("OnSegmentStop")
 
-    Grindon:UnreserveIDs(ids)
+    Grindon:ReserveIDs(ids, false)
 end
 
 function Herbalism:OnSegmentStart()
@@ -88,19 +88,11 @@ function Herbalism:OnSpellSucceeded(_, unit, _, guid)
 
     self.Database.global.segments[Grindon.CurrentSegment].nodes[self.LastTarget].count = self.Database.global.segments[Grindon.CurrentSegment].nodes[self.LastTarget].count + 1
 
-    if Widget:ItemExists(L["PluginName"], L["Nodes"], self.LastTarget) then
-        Widget:UpdateItem(L["PluginName"], L["Nodes"], self.LastTarget, self.Database.global.segments[Grindon.CurrentSegment].nodes[self.LastTarget].count)
-    else
-        Widget:SetItem(L["PluginName"], L["Nodes"], self.LastTarget, nil, self.LastTarget, self.Database.global.segments[Grindon.CurrentSegment].nodes[self.LastTarget].count)
-    end
+    Widget:SetItem(L["PluginName"] .. "/" .. L["Nodes"], self.LastTarget, nil, self.LastTarget, self.Database.global.segments[Grindon.CurrentSegment].nodes[self.LastTarget].count)
 end
 
 function Herbalism:OnLootReceive(_, itemId, amount, name)
     if Grindon:InArray(ids, itemId) == false then return end
 
-    if Widget:ItemExists(L["PluginName"], L["Herbs"], itemId) then
-        Widget:UpdateItem(L["PluginName"], L["Herbs"], itemId, Grindon:GetItemAmount(itemId))
-    else
-        Widget:SetItem(L["PluginName"], L["Herbs"], itemId, GetItemIcon(itemId), name, Grindon:GetItemAmount(itemId))
-    end
+    Widget:SetItem(L["PluginName"] .. "/" .. L["Herbs"], itemId, GetItemIcon(itemId), name, Grindon:GetItemAmount(itemId))
 end

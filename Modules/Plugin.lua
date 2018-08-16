@@ -53,7 +53,7 @@ function Plugin:OnProfileChanged()
     end
 end
 
-function Plugin:RegisterConfig(name, args, order, disabled)
+--[[function Plugin:RegisterConfig(name, args, order, disabled)
     if disabled == nil then disabled = false end
 
     options[name] = {
@@ -63,7 +63,7 @@ function Plugin:RegisterConfig(name, args, order, disabled)
         name = name,
         args = args
     }
-end
+end--]]
 
 function Plugin:ToggleModule(name, value)
     if not Grindon.CurrentSegment then
