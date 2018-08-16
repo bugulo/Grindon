@@ -60,11 +60,7 @@ function Currency:OnMoneyReceive(_, msg)
     local c = math.floor(result - (g * 10000) - (s * 100));
     result = g .. "g" .. s .. "s" .. c .. "c"
 
-    if Widget:ItemExists("Currency", "General", "money") then
-        Widget:UpdateItem("Currency", "General", "money", result)
-    else
-        Widget:SetItem("Currency", "money", 133784, "Gold", result, false)
-    end
+    Widget:SetItem("Currency", "money", 133784, "Gold", result, false)
 end
 
 function Currency:OnCurrencyReceive(_, msg)
@@ -76,7 +72,6 @@ function Currency:OnCurrencyReceive(_, msg)
     self.Database.global.segments[Grindon.CurrentSegment][id].count = self.Database.global.segments[Grindon.CurrentSegment][id].count + count
 
     local _, _, texture = GetCurrencyInfo(id)
-
 
     Widget:SetItem("Currency", id, texture, name, self.Database.global.segments[Grindon.CurrentSegment][id].count)
 end

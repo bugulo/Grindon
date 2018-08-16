@@ -478,13 +478,15 @@ end
 
 function Widget:UpdateFrequency(category)
     for _, category in pairs(category.Categories) do
-        for _, item in pairs(category.Items) do
-            if item.Frequency then
-                local frequency = string.format("%.2f", (item.Amount * 60) / self.Time):gsub("%.?0+$", "")
-                self.FrameCache[item.Frame].Frequency:SetText(frequency .. "/m")
+        if category.Active then
+            for _, item in pairs(category.Items) do
+                if item.Frequency then
+                    local frequency = string.format("%.2f", (item.Amount * 60) / self.Time):gsub("%.?0+$", "")
+                    self.FrameCache[item.Frame].Frequency:SetText(frequency .. "/m")
+                end
             end
+            self:UpdateFrequency(category)
         end
-        self:UpdateFrequency(category)
     end
 end
 
