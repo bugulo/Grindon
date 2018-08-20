@@ -4,10 +4,6 @@ local Default = Plugin:NewModule("Default", "AceConsole-3.0", "AceEvent-3.0")
 
 local Widget = Grindon:GetModule("Widget")
 
-function Default:OnInitialize()
-    --Plugin:RegisterConfig("Default", options, 0, true)
-end
-
 function Default:OnEnable()
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
@@ -27,9 +23,23 @@ function Default:OnSegmentStop()
 end
 
 function Default:OnLootReceive(_, itemId, _, name)
-    if Grindon.Reserved[itemId] == true then return end
+    if Grindon:IsReserved(itemId) then return end
 
     local _, itemType = GetItemInfoInstant(itemId)
 
-    Widget:SetItem("Default/" .. itemType, itemId, GetItemIcon(itemId), name, Grindon:GetItemAmount(itemId))
+    Widget:SetItem("Default/" .. itemType, itemId, GetItemIcon(itemId), name, Grindon:GetItemInfo(itemId).count)
+end
+
+function Default:RequestHistory(id)
+    local response = {}
+    for itemId, value in Grindon:IterateItems(id) do
+        if not Grindon:IsReserved(itemId) and value.count ~= 0 then
+            table.insert(response, {
+                Text = value.name,
+                Icon = GetItemIcon(itemId),
+                Amount = value.count
+            })
+        end
+    end
+    return response
 end

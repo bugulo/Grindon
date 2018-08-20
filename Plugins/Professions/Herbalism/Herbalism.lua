@@ -6,6 +6,8 @@ local Widget = Grindon:GetModule("Widget")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grindon_Professions_Herbalism")
 
+local database
+
 local spell = GetSpellInfo(2366)
 
 local ids = {
@@ -42,7 +44,7 @@ local defaults = {
 }
 
 function Herbalism:OnInitialize()
-    self.Database = Grindon.Database:RegisterNamespace("Professions_Herbalism", defaults)
+    database = Grindon:RegisterNamespace("Professions_Herbalism", defaults)
 end
 
 function Herbalism:OnEnable()
@@ -51,14 +53,14 @@ function Herbalism:OnEnable()
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
 
-    Grindon:ReserveIDs(ids, true)
+    Grindon:Reserve(ids, true)
 end
 
 function Herbalism:OnDisable()
     self:UnregisterMessage("OnSegmentStart")
     self:UnregisterMessage("OnSegmentStop")
 
-    Grindon:ReserveIDs(ids, false)
+    Grindon:Reserve(ids, false)
 end
 
 function Herbalism:OnSegmentStart()
@@ -86,13 +88,34 @@ function Herbalism:OnSpellSucceeded(_, unit, _, guid)
     local name = GetSpellInfo(guid)
     if name ~= spell then return end
 
-    self.Database.global.segments[Grindon.CurrentSegment].nodes[self.LastTarget].count = self.Database.global.segments[Grindon.CurrentSegment].nodes[self.LastTarget].count + 1
+    local node = database.global.segments[Grindon:GetSegmentID()].nodes[self.LastTarget]
 
-    Widget:SetItem(L["PluginName"] .. "/" .. L["Nodes"], self.LastTarget, nil, self.LastTarget, self.Database.global.segments[Grindon.CurrentSegment].nodes[self.LastTarget].count)
+    node.count = node.count + 1
+
+    Widget:SetItem(L["PluginName"] .. "/" .. L["Nodes"], self.LastTarget, nil, self.LastTarget, node.count)
 end
 
 function Herbalism:OnLootReceive(_, itemId, amount, name)
-    if Grindon:InArray(ids, itemId) == false then return end
+    if not Grindon:InTable(ids, itemId) then return end
 
-    Widget:SetItem(L["PluginName"] .. "/" .. L["Herbs"], itemId, GetItemIcon(itemId), name, Grindon:GetItemAmount(itemId))
+    Widget:SetItem(L["PluginName"] .. "/" .. L["Herbs"], itemId, GetItemIcon(itemId), name, Grindon:GetItemInfo(itemId).count)
+end
+
+function Herbalism:RequestHistory(id)
+    local response = {}
+    local segment = database.global.segments[id]
+    for name, node in pairs(segment.nodes) do
+        table.insert(response, {Text = name, Icon = nil, Amount = node.count})
+    end
+    for _, itemId in pairs(ids) do
+        local item = Grindon:GetItemInfo(itemId, id)
+        if item.count ~= 0 then
+            table.insert(response, {
+                Text = item.name,
+                Icon = GetItemIcon(itemId),
+                Amount = item.count
+            })
+        end
+    end
+    return response
 end

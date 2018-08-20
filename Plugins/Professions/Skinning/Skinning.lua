@@ -1,5 +1,3 @@
-local AceLocale = LibStub("AceLocale-3.0")
-
 local Grindon = LibStub("AceAddon-3.0"):GetAddon("Grindon")
 local Plugin = Grindon:GetModule("Plugin")
 local Skinning = Plugin:NewModule("Professions_Skinning", "AceConsole-3.0", "AceEvent-3.0")
@@ -30,14 +28,14 @@ function Skinning:OnEnable()
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
 
-    Grindon:ReserveIDs(ids, true)
+    Grindon:Reserve(ids, true)
 end
 
 function Skinning:OnDisable()
     self:UnregisterMessage("OnSegmentStart")
     self:UnregisterMessage("OnSegmentStop")
 
-    Grindon:ReserveIDs(ids, false)
+    Grindon:Reserve(ids, false)
 end
 
 function Skinning:OnSegmentStart()
@@ -49,7 +47,22 @@ function Skinning:OnSegmentStop()
 end
 
 function Skinning:OnLootReceive(_, itemId, amount, name)
-    if Grindon:InArray(ids, itemId) == false then return end
+    if not Grindon:InTable(ids, itemId) then return end
 
-    Widget:SetItem(L["PluginName"], itemId, GetItemIcon(itemId), name, Grindon:GetItemAmount(itemId))
+    Widget:SetItem(L["PluginName"], itemId, GetItemIcon(itemId), name, Grindon:GetItemInfo(itemId).count)
+end
+
+function Skinning:RequestHistory(id)
+    local response = {}
+    for _, itemId in pairs(ids) do
+        local item = Grindon:GetItemInfo(itemId, id)
+        if item.count ~= 0 then
+            table.insert(response, {
+                Text = item.name,
+                Icon = GetItemIcon(itemId),
+                Amount = item.count
+            })
+        end
+    end
+    return response
 end

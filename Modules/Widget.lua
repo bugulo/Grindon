@@ -7,6 +7,8 @@ local Config = Grindon:GetModule("Config")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grindon").Widget
 
+local database
+
 local options = {
     show_widget = {
         order = 0,
@@ -35,22 +37,22 @@ local options = {
         order = 2,
         name = L["LockMove"],
         type = "toggle",
-        set = function(_, val) Widget.Database.profile.lockMove = val end,
-        get = function() return Widget.Database.profile.lockMove end
+        set = function(_, val) database.profile.lockMove = val end,
+        get = function() return database.profile.lockMove end
     },
     lockSize = {
         order = 3,
         name = L["LockSize"],
         type = "toggle",
-        set = function(_, val) Widget.Database.profile.lockSize = val end,
-        get = function() return Widget.Database.profile.lockSize end
+        set = function(_, val) database.profile.lockSize = val end,
+        get = function() return database.profile.lockSize end
     },
     frequency = {
         order = 4,
         name = L["Frequency"],
         type = "toggle",
         set = function(_, val) Widget:ToggleFrequency(val) end,
-        get = function() return Widget.Database.profile.frequency end
+        get = function() return database.profile.frequency end
     },
     header_color = {
         order = 5,
@@ -59,14 +61,14 @@ local options = {
         hasAlpha = true,
         set = function(_, r, g, b, a)
             if r == nil or g == nil or b == nil then return end
-            Widget.Database.profile.colors.header.bg.r = r
-            Widget.Database.profile.colors.header.bg.g = g
-            Widget.Database.profile.colors.header.bg.b = b
-            Widget.Database.profile.colors.header.bg.a = a
+            database.profile.colors.header.bg.r = r
+            database.profile.colors.header.bg.g = g
+            database.profile.colors.header.bg.b = b
+            database.profile.colors.header.bg.a = a
             Widget.HeaderBackground:SetColorTexture(r, g, b, a)
         end,
         get = function()
-            local color = Widget.Database.profile.colors.header.bg
+            local color = database.profile.colors.header.bg
             return color.r , color.g, color.b, color.a
         end
     },
@@ -76,14 +78,14 @@ local options = {
         type = "color",
         set = function(_, r, g, b)
             if r == nil or g == nil or b == nil then return end
-            Widget.Database.profile.colors.header.text.r = r
-            Widget.Database.profile.colors.header.text.g = g
-            Widget.Database.profile.colors.header.text.b = b
+            database.profile.colors.header.text.r = r
+            database.profile.colors.header.text.g = g
+            database.profile.colors.header.text.b = b
             Widget.Header.Title:SetTextColor(r, g, b)
             Widget.Header.Time:SetTextColor(r, g, b)
         end,
         get = function()
-            local color = Widget.Database.profile.colors.header.text
+            local color = database.profile.colors.header.text
             return color.r , color.g, color.b
         end
     },
@@ -94,14 +96,14 @@ local options = {
         hasAlpha = true,
         set = function(_, r, g, b, a)
             if r == nil or g == nil or b == nil then return end
-            Widget.Database.profile.colors.content.bg.r = r
-            Widget.Database.profile.colors.content.bg.g = g
-            Widget.Database.profile.colors.content.bg.b = b
-            Widget.Database.profile.colors.content.bg.a = a
+            database.profile.colors.content.bg.r = r
+            database.profile.colors.content.bg.g = g
+            database.profile.colors.content.bg.b = b
+            database.profile.colors.content.bg.a = a
             Widget.ContentBackground:SetColorTexture(r, g, b, a)
         end,
         get = function()
-            local color = Widget.Database.profile.colors.content.bg
+            local color = database.profile.colors.content.bg
             return color.r , color.g, color.b, color.a
         end
     },
@@ -112,7 +114,7 @@ local options = {
         min = 0.5,
         max = 1.5,
         set = function(_, val) Window.SetScale(Widget.Frame, val) end,
-        get = function() return Widget.Database.profile.transform.scale end,
+        get = function() return database.profile.transform.scale end,
         isPercent = true
     }
 }
@@ -143,7 +145,7 @@ local defaults = {
 }
 
 function Widget:OnInitialize()
-    self.Database = Grindon.Database:RegisterNamespace("Widget", defaults)
+    database = Grindon:RegisterNamespace("Widget", defaults)
 
     Config:Register(L["ConfigName"], options, 2)
 
@@ -169,8 +171,6 @@ function Widget:OnSegmentStart()
 end
 
 function Widget:OnSegmentStop()
-    self:CancelTimer(self.Timer)
-
     self.Header.Time:SetText("00:00:00")
     self:CleanCategory(self.Tree)
     self.Tree = {
@@ -186,11 +186,11 @@ function Widget:CreateFrame()
     self.Frame:SetResizable(true)
     self.Frame:SetMovable(true)
     self.Frame:SetPoint("CENTER", UIParent)
-    self.Frame:SetSize(self.Database.profile.transform.sizeX, self.Database.profile.transform.sizeY)
+    self.Frame:SetSize(database.profile.transform.sizeX, database.profile.transform.sizeY)
     self.Frame:SetMinResize(200, 200)
     self.Frame:SetClampedToScreen(true)
 
-    Window.RegisterConfig(self.Frame, self.Database.profile.transform)
+    Window.RegisterConfig(self.Frame, database.profile.transform)
     Window.RestorePosition(self.Frame)
 
     self.Header = CreateFrame("Frame", nil, self.Frame)
@@ -199,13 +199,13 @@ function Widget:CreateFrame()
     self.Header:SetPoint("TOPRIGHT", self.Frame)
     self.Header:SetHeight(25)
     self.Header:RegisterForDrag("LeftButton")
-    self.Header:SetScript("OnDragStart", function() if not Widget.Database.profile.lockMove then self.Frame:StartMoving() end end)
+    self.Header:SetScript("OnDragStart", function() if not database.profile.lockMove then self.Frame:StartMoving() end end)
     self.Header:SetScript("OnDragStop", function()
         self.Frame:StopMovingOrSizing()
         Window.SavePosition(self.Frame)
     end)
 
-    local colors = Widget.Database.profile.colors
+    local colors = database.profile.colors
     self.HeaderBackground = self.Header:CreateTexture(nil, "OVERLAY")
     self.HeaderBackground:SetColorTexture(colors.header.bg.r, colors.header.bg.g, colors.header.bg.b, colors.header.bg.a)
     self.HeaderBackground:SetAllPoints(self.Header)
@@ -244,11 +244,11 @@ function Widget:CreateFrame()
     self.Anchor:SetSize(30, 30)
     self.Anchor:RegisterForDrag("LeftButton")
 
-    self.Anchor:SetScript("OnDragStart", function() if not Widget.Database.profile.lockSize then self.Frame:StartSizing() end end)
+    self.Anchor:SetScript("OnDragStart", function() if not database.profile.lockSize then self.Frame:StartSizing() end end)
     self.Anchor:SetScript("OnDragStop", function()
         self.Frame:StopMovingOrSizing()
-        Widget.Database.profile.transform.sizeX = self.Frame:GetWidth()
-        Widget.Database.profile.transform.sizeY = self.Frame:GetHeight()
+        database.profile.transform.sizeX = self.Frame:GetWidth()
+        database.profile.transform.sizeY = self.Frame:GetHeight()
     end)
 
     local AnchorBackground = self.Anchor:CreateTexture(nil, "OVERLAY")
@@ -263,12 +263,13 @@ end
 
 function Widget:SegmentTimer()
     self.Time = self.Time + 1
+
     local h = string.format("%02.f", math.floor(self.Time / 3600))
     local m = string.format("%02.f", math.floor(self.Time / 60 - (h * 60)))
     local s = string.format("%02.f", math.floor(self.Time - h * 3600 - m * 60))
     self.Header.Time:SetText(h .. ":" .. m .. ":" .. s)
 
-    if Widget.Database.profile.frequency then self:UpdateFrequency(self.Tree) end
+    if database.profile.frequency then self:UpdateFrequency(self.Tree) end
 end
 
 function Widget:SetItem(path, id, icon, name, amount, frequency)
@@ -520,7 +521,7 @@ function Widget:ToggleFrequency(val)
         self:CleanFrequency(self.Tree)
     end
 
-    Widget.Database.profile.frequency = val
+    database.profile.frequency = val
 end
 
 function Widget:CleanFrequency(category)
@@ -533,11 +534,11 @@ function Widget:CleanFrequency(category)
 end
 
 function Widget:OnProfileChanged()
-    Window.RegisterConfig(self.Frame, self.Database.profile.transform)
+    Window.RegisterConfig(self.Frame, database.profile.transform)
     Window.RestorePosition(self.Frame)
-    self.Frame:SetSize(self.Database.profile.transform.sizeX, self.Database.profile.transform.sizeY)
+    self.Frame:SetSize(database.profile.transform.sizeX, database.profile.transform.sizeY)
 
-    local colors = Widget.Database.profile.colors
+    local colors = database.profile.colors
     self.HeaderBackground:SetColorTexture(colors.header.bg.r, colors.header.bg.g, colors.header.bg.b, colors.header.bg.a)
     self.ContentBackground:SetColorTexture(colors.content.bg.r, colors.content.bg.g, colors.content.bg.b, colors.content.bg.a)
     self.Header.Title:SetTextColor(colors.header.text.r, colors.header.text.g, colors.header.text.b)
@@ -545,7 +546,7 @@ function Widget:OnProfileChanged()
 end
 
 function Widget:ResetSettings()
-    self.Database:ResetProfile()
+    database:ResetProfile()
 
     self:OnProfileChanged()
 end

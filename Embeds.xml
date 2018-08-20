@@ -9,6 +9,7 @@
     <Include file="Libs\Ace3\AceDB-3.0\AceDB-3.0.xml"/>
     <Include file="Libs\Ace3\AceDBOptions-3.0\AceDBOptions-3.0.xml"/>
     <Include file="Libs\Ace3\AceEvent-3.0\AceEvent-3.0.xml"/>
+    <Include file="Libs\Ace3\AceGUI-3.0\AceGUI-3.0.xml"/>
     <Include file="Libs\Ace3\AceLocale-3.0\AceLocale-3.0.xml"/>
     <Include file="Libs\Ace3\AceTimer-3.0\AceTimer-3.0.xml"/>
 </Ui>

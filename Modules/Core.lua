@@ -5,18 +5,9 @@ local Config = Grindon:GetModule("Config")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grindon").Core
 
+local database
+
 local options = {
-    notice = {
-        order = 0,
-        type = "header",
-        name = "!!! " .. L["Notice"] .. " !!!"
-    },
-    notice_content = {
-        order = 1,
-        name = L["NoticeContent"],
-        type = "description",
-        fontSize = "large"
-    },
     header = {
         order = 2,
         type = "header",
@@ -26,8 +17,8 @@ local options = {
         order = 3,
         name = L["GroupLoot"],
         type = "toggle",
-        set = function(_, val) Core.Database.profile.groupLoot = val end,
-        get = function() return Core.Database.profile.groupLoot end
+        set = function(_, val) database.profile.groupLoot = val end,
+        get = function() return database.profile.groupLoot end
     }
 }
 
@@ -38,7 +29,7 @@ local defaults = {
 }
 
 function Core:OnInitialize()
-    self.Database = Grindon.Database:RegisterNamespace("Core", defaults)
+    database = Grindon:RegisterNamespace("Core", defaults)
 
     self:RegisterMessage("OnSegmentStart", "OnSegmentStart")
     self:RegisterMessage("OnSegmentStop", "OnSegmentStop")
@@ -55,7 +46,7 @@ function Core:OnSegmentStop()
 end
 
 function Core:OnLootReceive(_, msg, _, _, _, player)
-    if not self.Database.profile.groupLoot then
+    if not database.profile.groupLoot then
         if player ~= UnitName("player") then
             return
         end
@@ -66,6 +57,7 @@ function Core:OnLootReceive(_, msg, _, _, _, player)
     local count = string.match(msg, "x(%d+)")
     if count == nil then count = 1 end
 
-    Grindon.Database.global.segments[Grindon.CurrentSegment].items[id].count = Grindon.Database.global.segments[Grindon.CurrentSegment].items[id].count + count
+    Grindon:GetItemInfo(id).name = name
+    Grindon:GetItemInfo(id).count = Grindon:GetItemInfo(id).count + count
     self:SendMessage("OnLootReceive", id, count, name)
 end

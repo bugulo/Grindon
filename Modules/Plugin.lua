@@ -5,6 +5,8 @@ local Config = Grindon:GetModule("Config")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Grindon").Plugin
 
+local database
+
 local options = {
     general = {
         name = "General",
@@ -25,7 +27,7 @@ local defaults = {
 }
 
 function Plugin:OnInitialize()
-    self.Database = Grindon.Database:RegisterNamespace("Plugins", defaults)
+    database = Grindon:RegisterNamespace("Plugins", defaults)
 
     self:RegisterMessage("OnProfileChanged", "OnProfileChanged")
 
@@ -34,10 +36,10 @@ function Plugin:OnInitialize()
             name = name,
             type = "toggle",
             set = function(_, val) self:ToggleModule(name, val) end,
-            get = function() return self.Database.profile[name].enabled end
+            get = function() return database.profile[name].enabled end
         }
 
-        if self.Database.profile[name].enabled then module:Enable() end
+        if database.profile[name].enabled then module:Enable() end
     end
 
     Config:Register(L["ConfigName"], options, 3)
@@ -45,7 +47,7 @@ end
 
 function Plugin:OnProfileChanged()
     for name, module in self:IterateModules() do
-        if self.Database.profile[name].enabled then
+        if database.profile[name].enabled then
             if not module:IsEnabled() then module:Enable() end
         else
             if module:IsEnabled() then module:Disable() end
@@ -66,14 +68,14 @@ end
 end--]]
 
 function Plugin:ToggleModule(name, value)
-    if not Grindon.CurrentSegment then
+    if not Grindon:IsStarted() then
         if value then
             self:GetModule(name):Enable()
         else
             self:GetModule(name):Disable()
         end
 
-        self.Database.profile[name].enabled = value
+        database.profile[name].enabled = value
     else
         self:Print(L["SegmentStarted"])
     end

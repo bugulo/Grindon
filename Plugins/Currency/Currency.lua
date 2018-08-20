@@ -4,22 +4,25 @@ local Currency = Plugin:NewModule("Currency", "AceConsole-3.0", "AceEvent-3.0")
 
 local Widget = Grindon:GetModule("Widget")
 
+local database
+
 local defaults = {
     global = {
         segments = {
             ["*"] = {
-                ["*"] = {
-                    count = 0
-                },
-                money = 0
+                money = 0,
+                other = {
+                    ["*"] = {
+                        count = 0
+                    }
+                }
             }
         }
     }
 }
 
 function Currency:OnInitialize()
-    self.Database = Grindon.Database:RegisterNamespace("Currency", defaults)
-    --Plugin:RegisterConfig("Currency", options, 1, true)
+    database = Grindon:RegisterNamespace("Currency", defaults)
 end
 
 function Currency:OnEnable()
@@ -51,16 +54,13 @@ function Currency:OnMoneyReceive(_, msg)
     if silver == nil then silver = 0 end
     if copper == nil then copper = 0 end
 
-    local result = self.Database.global.segments[Grindon.CurrentSegment].money + gold * 10000 + silver * 100 + copper
+    local segment = database.global.segments[Grindon:GetSegmentID()]
 
-    self.Database.global.segments[Grindon.CurrentSegment].money = result
+    local result = segment.money + gold * 10000 + silver * 100 + copper
 
-    local g = math.floor(result / 10000);
-    local s = math.floor((result - g * 10000) / 100);
-    local c = math.floor(result - (g * 10000) - (s * 100));
-    result = g .. "g" .. s .. "s" .. c .. "c"
+    segment.money = result
 
-    Widget:SetItem("Currency", "money", 133784, "Gold", result, false)
+    Widget:SetItem("Currency", "money", 133784, "Gold", self:FormatCopper(result), false)
 end
 
 function Currency:OnCurrencyReceive(_, msg)
@@ -69,9 +69,31 @@ function Currency:OnCurrencyReceive(_, msg)
     local count = string.match(msg, "x(%d+)")
     if count == nil then count = 1 end
 
-    self.Database.global.segments[Grindon.CurrentSegment][id].count = self.Database.global.segments[Grindon.CurrentSegment][id].count + count
+    local item = database.global.segments[Grindon:GetSegmentID()].other[id]
+
+    item.count = item.count + count
 
     local _, _, texture = GetCurrencyInfo(id)
 
-    Widget:SetItem("Currency", id, texture, name, self.Database.global.segments[Grindon.CurrentSegment][id].count)
+    Widget:SetItem("Currency", id, texture, name, item.count)
+end
+
+function Currency:FormatCopper(amount)
+    local g = math.floor(amount / 10000)
+    local s = math.floor((amount - g * 10000) / 100)
+    local c = math.floor(amount - (g * 10000) - (s * 100))
+    return g .. "g" .. s .. "s" .. c .. "c"
+end
+
+function Currency:RequestHistory(id)
+    local response = {}
+    local segment = database.global.segments[id]
+    if(segment.money > 0) then
+        table.insert(response, {Text = "Gold", Icon = 133784, Amount = self:FormatCopper(segment.money)})
+    end
+    for currencyId, currency in pairs(database.global.segments[id].other) do
+        local name, _, texture = GetCurrencyInfo(currencyId)
+        table.insert(response, {Text = name, Icon = texture, Amount = currency.count})
+    end
+    return response
 end
