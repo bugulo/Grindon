@@ -22,12 +22,12 @@ function Default:OnSegmentStop()
     self:UnregisterMessage("OnLootReceive")
 end
 
-function Default:OnLootReceive(_, itemId, _, name)
+function Default:OnLootReceive(_, itemId, _, name, color)
     if Grindon:IsReserved(itemId) then return end
 
     local _, itemType = GetItemInfoInstant(itemId)
 
-    Widget:SetItem("Default/" .. itemType, itemId, GetItemIcon(itemId), name, Grindon:GetItemInfo(itemId).count)
+    Widget:SetItem("Default/" .. itemType, itemId, GetItemIcon(itemId), name, Grindon:GetItemInfo(itemId).count, color)
 end
 
 function Default:RequestHistory(id)

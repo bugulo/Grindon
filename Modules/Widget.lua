@@ -272,8 +272,11 @@ function Widget:SegmentTimer()
     if database.profile.frequency then self:UpdateFrequency(self.Tree) end
 end
 
-function Widget:SetItem(path, id, icon, name, amount, frequency)
+function Widget:SetItem(path, id, icon, name, amount, color, frequency)
+    if color == nil then color = "ffffff" end
     if frequency == nil then frequency = true end
+
+    local r, g, b = self:Hex2RGB(color)
 
     local categories = Grindon:Split(path, "/")
 
@@ -307,6 +310,7 @@ function Widget:SetItem(path, id, icon, name, amount, frequency)
         self.FrameCache[item.Frame].Icon:SetTexture(icon)
         self.FrameCache[item.Frame].Amount:SetText(amount)
         self.FrameCache[item.Frame].Name:SetText(name)
+        self.FrameCache[item.Frame].Name:SetTextColor(r, g, b)
         return
     end
 
@@ -323,6 +327,7 @@ function Widget:SetItem(path, id, icon, name, amount, frequency)
     self.FrameCache[frameID].Icon:SetTexture(icon)
     self.FrameCache[frameID].Amount:SetText(amount)
     self.FrameCache[frameID].Name:SetText(name)
+    self.FrameCache[frameID].Name:SetTextColor(r, g, b)
 
     self:Recalculate()
 end
@@ -549,4 +554,9 @@ function Widget:ResetSettings()
     database:ResetProfile()
 
     self:OnProfileChanged()
+end
+
+function Widget:Hex2RGB(hex)
+    local result = hex:gsub("#","")
+    return tonumber("0x"..result:sub(1,2)) / 255, tonumber("0x"..result:sub(3,4)) / 255, tonumber("0x"..result:sub(5,6)) / 255
 end

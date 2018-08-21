@@ -32,14 +32,16 @@ function History:DrawIndex()
 
     local lastItem
     for i, value in Grindon:IterateSegments() do
-        local segment = AceGUI:Create("InteractiveLabel")
-        segment:SetText("ID#" .. i .. ", " .. date('%Y-%m-%d %H:%M:%S', value.timeStart) .. ", " .. value.character)
-        segment:SetImage(133784)
-        segment:SetFullWidth(true)
-        segment:SetHighlight("Interface/Tooltips/UI-Tooltip-Background")
-        segment:SetCallback("OnClick", function() self:DrawSegment(i) end)
-        self.scroll:AddChild(segment, lastItem)
-        lastItem = segment
+        if i ~= Grindon:GetSegmentID() then
+            local segment = AceGUI:Create("InteractiveLabel")
+            segment:SetText("ID#" .. i .. ", " .. date('%Y-%m-%d %H:%M:%S', value.timeStart) .. ", " .. value.character)
+            segment:SetImage(133784)
+            segment:SetFullWidth(true)
+            segment:SetHighlight("Interface/Tooltips/UI-Tooltip-Background")
+            segment:SetCallback("OnClick", function() self:DrawSegment(i) end)
+            self.scroll:AddChild(segment, lastItem)
+            lastItem = segment
+        end
     end
 end
 

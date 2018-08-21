@@ -60,13 +60,15 @@ function Currency:OnMoneyReceive(_, msg)
 
     segment.money = result
 
-    Widget:SetItem("Currency", "money", 133784, "Gold", self:FormatCopper(result), false)
+    Widget:SetItem("Currency", "money", 133784, "Gold", self:FormatCopper(result), "FED000", false)
 end
 
 function Currency:OnCurrencyReceive(_, msg)
     local id = tonumber(string.match(msg, "Hcurrency:(%d+):"))
     local name = string.match(msg, "%[(.+)%]")
     local count = string.match(msg, "x(%d+)")
+    local color = string.match(msg, "|?c?f?f?(%x*)|")
+
     if count == nil then count = 1 end
 
     local item = database.global.segments[Grindon:GetSegmentID()].other[id]
@@ -75,7 +77,7 @@ function Currency:OnCurrencyReceive(_, msg)
 
     local _, _, texture = GetCurrencyInfo(id)
 
-    Widget:SetItem("Currency", id, texture, name, item.count)
+    Widget:SetItem("Currency", id, texture, name, item.count, color)
 end
 
 function Currency:FormatCopper(amount)

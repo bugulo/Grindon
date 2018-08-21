@@ -95,10 +95,10 @@ function Herbalism:OnSpellSucceeded(_, unit, _, guid)
     Widget:SetItem(L["PluginName"] .. "/" .. L["Nodes"], self.LastTarget, nil, self.LastTarget, node.count)
 end
 
-function Herbalism:OnLootReceive(_, itemId, amount, name)
+function Herbalism:OnLootReceive(_, itemId, _, name, color)
     if not Grindon:InTable(ids, itemId) then return end
 
-    Widget:SetItem(L["PluginName"] .. "/" .. L["Herbs"], itemId, GetItemIcon(itemId), name, Grindon:GetItemInfo(itemId).count)
+    Widget:SetItem(L["PluginName"] .. "/" .. L["Herbs"], itemId, GetItemIcon(itemId), name, Grindon:GetItemInfo(itemId).count, color)
 end
 
 function Herbalism:RequestHistory(id)

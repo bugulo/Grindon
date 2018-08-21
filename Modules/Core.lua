@@ -55,9 +55,10 @@ function Core:OnLootReceive(_, msg, _, _, _, player)
     local id = tonumber(string.match(msg, "Hitem:(%d+):"))
     local name = string.match(msg, "%[(.+)%]")
     local count = string.match(msg, "x(%d+)")
+    local color = string.match(msg, "|?c?f?f?(%x*)|")
     if count == nil then count = 1 end
 
     Grindon:GetItemInfo(id).name = name
     Grindon:GetItemInfo(id).count = Grindon:GetItemInfo(id).count + count
-    self:SendMessage("OnLootReceive", id, count, name)
+    self:SendMessage("OnLootReceive", id, count, name, color)
 end
