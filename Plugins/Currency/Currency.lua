@@ -4,6 +4,8 @@ local Currency = Plugin:NewModule("Currency", "AceConsole-3.0", "AceEvent-3.0")
 
 local Widget = Grindon:GetModule("Widget")
 
+local L = LibStub("AceLocale-3.0"):GetLocale("Grindon_Currency")
+
 local database
 
 local defaults = {
@@ -49,6 +51,7 @@ function Currency:OnMoneyReceive(_, msg)
     local gold = string.match(msg, "(%d+) Gold")
     local silver = string.match(msg, "(%d+) Silver")
     local copper = string.match(msg, "(%d+) Copper")
+    -- todo this need to be reworked because of localization
 
     if gold == nil then gold = 0 end
     if silver == nil then silver = 0 end
@@ -60,7 +63,7 @@ function Currency:OnMoneyReceive(_, msg)
 
     segment.money = result
 
-    Widget:SetItem("Currency", "money", 133784, "Gold", self:FormatCopper(result), "FED000", false)
+    Widget:SetItem(L["PluginName"], "money", 133784, "Gold", self:FormatCopper(result), "FED000", false)
 end
 
 function Currency:OnCurrencyReceive(_, msg)
@@ -77,7 +80,7 @@ function Currency:OnCurrencyReceive(_, msg)
 
     local _, _, texture = GetCurrencyInfo(id)
 
-    Widget:SetItem("Currency", id, texture, name, item.count, color)
+    Widget:SetItem(L["PluginName"], id, texture, name, item.count, color)
 end
 
 function Currency:FormatCopper(amount)
@@ -91,7 +94,7 @@ function Currency:RequestHistory(id)
     local response = {}
     local segment = database.global.segments[id]
     if(segment.money > 0) then
-        table.insert(response, {Text = "Gold", Icon = 133784, Amount = self:FormatCopper(segment.money)})
+        table.insert(response, {Text = L["Gold"], Icon = 133784, Amount = self:FormatCopper(segment.money)})
     end
     for currencyId, currency in pairs(database.global.segments[id].other) do
         local name, _, texture = GetCurrencyInfo(currencyId)

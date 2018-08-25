@@ -150,7 +150,7 @@ function Grindon:RegisterNamespace(name, defaults)
     return database:RegisterNamespace(name, defaults)
 end
 
--- HELPER FUNCTIONS
+-- HELPER LUA FUNCTIONS
 
 function Grindon:InTable(table, val)
     for _, value in ipairs(table) do

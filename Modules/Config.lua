@@ -15,11 +15,10 @@ function Config:OnInitialize()
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Grindon", "Grindon")
 end
 
-function Config:Register(name, args, order, disabled)
+function Config:Register(name, args, order)
     options.plugins[name] = {
         [name] = {
             type = "group",
-            disabled = disabled,
             order = order,
             childGroups = "select",
             name = name,

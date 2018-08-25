@@ -55,17 +55,14 @@ function Plugin:OnProfileChanged()
     end
 end
 
---[[function Plugin:RegisterConfig(name, args, order, disabled)
-    if disabled == nil then disabled = false end
-
+function Plugin:RegisterConfig(name, args, order)
     options[name] = {
         type = "group",
-        disabled = disabled,
-        order = order + 1,
+        order = order,
         name = name,
         args = args
     }
-end--]]
+end
 
 function Plugin:ToggleModule(name, value)
     if not Grindon:IsStarted() then

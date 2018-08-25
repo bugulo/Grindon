@@ -9,12 +9,12 @@ local database
 
 local options = {
     header = {
-        order = 2,
+        order = 0,
         type = "header",
         name = L["Header"]
     },
     groupLoot = {
-        order = 3,
+        order = 1,
         name = L["GroupLoot"],
         type = "toggle",
         set = function(_, val) database.profile.groupLoot = val end,
