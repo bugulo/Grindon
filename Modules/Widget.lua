@@ -171,6 +171,7 @@ function Widget:OnSegmentStart()
 end
 
 function Widget:OnSegmentStop()
+    self:CancelTimer(self.Timer)
     self.Header.Time:SetText("00:00:00")
     self:CleanCategory(self.Tree)
     self.Tree = {
