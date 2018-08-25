@@ -223,10 +223,26 @@ function Widget:CreateFrame()
     self.Header.Title:SetHeight(20)
     self.Header.Title:SetTextColor(colors.header.text.r, colors.header.text.g, colors.header.text.b)
 
-    self.Content = CreateFrame("Frame", nil, self.Frame)
-    self.Content:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT", 5, -5)
-    self.Content:SetPoint("BOTTOMRIGHT", self.Frame, -5, 5)
-    self.Content:SetClipsChildren(true)
+    self.Body = CreateFrame("ScrollFrame", nil, self.Frame)
+    self.Body:SetClipsChildren(true)
+    self.Body:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT", 5, -5)
+    self.Body:SetPoint("BOTTOMRIGHT", self.Frame, -5, 5)
+    self.Body:EnableMouseWheel(true)
+    self.Body:SetScript("OnMouseWheel", function(widget, value)
+        local result = widget:GetVerticalScroll() - value * 20
+
+        if result < 0 then result = 0
+        elseif result > widget:GetVerticalScrollRange() then result = widget:GetVerticalScrollRange() end
+
+        widget:SetVerticalScroll(result)
+        self.Content:SetPoint("LEFT", self.Body)
+        self.Content:SetPoint("RIGHT", self.Body)
+    end)
+
+    self.Content = CreateFrame("Frame", nil, self.Body)
+    self.Body:SetScrollChild(self.Content)
+    self.Content:SetPoint("LEFT", self.Body)
+    self.Content:SetPoint("RIGHT", self.Body)
 
     self.ContentTop = CreateFrame("Frame", nil, self.Content)
     self.ContentTop:SetPoint("TOPLEFT", self.Content)
@@ -255,8 +271,6 @@ function Widget:CreateFrame()
     AnchorBackground:SetTexture("Interface/Cursor/Item.blp")
     AnchorBackground:SetRotation(math.rad(-180))
     AnchorBackground:SetAllPoints(self.Anchor)
-
-    self.Content.Categories = {}
 
     self.Frame:Hide()
 end
@@ -456,7 +470,9 @@ end
 
 function Widget:Recalculate()
     self.LastParent = self.ContentTop
+    self.Children = 0
     self:RecalculateCategory(self.Tree, 0)
+    self.Content:SetHeight(self.Children * 20)
 end
 
 function Widget:RecalculateCategory(category, offset)
@@ -466,6 +482,7 @@ function Widget:RecalculateCategory(category, offset)
         self.FrameCache[category.Frame]:SetPoint("RIGHT", self.Content)
         self.FrameCache[category.Frame]:Show()
         self.LastParent = self.FrameCache[category.Frame]
+        self.Children = self.Children + 1
 
         if category.Active then
 
@@ -475,6 +492,7 @@ function Widget:RecalculateCategory(category, offset)
                 self.FrameCache[item.Frame]:SetPoint("RIGHT", self.Content)
                 self.FrameCache[item.Frame]:Show()
                 self.LastParent = self.FrameCache[item.Frame]
+                self.Children = self.Children + 1
             end
 
             self:RecalculateCategory(category, offset + 10)
