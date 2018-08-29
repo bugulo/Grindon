@@ -48,22 +48,26 @@ function Currency:OnSegmentStop()
 end
 
 function Currency:OnMoneyReceive(_, msg)
-    local gold = string.match(msg, "(%d+) Gold")
-    local silver = string.match(msg, "(%d+) Silver")
-    local copper = string.match(msg, "(%d+) Copper")
-    -- todo this need to be reworked because of localization
+    local amount
+    local values = {}
 
-    if gold == nil then gold = 0 end
-    if silver == nil then silver = 0 end
-    if copper == nil then copper = 0 end
+    values[1] = string.match(msg, "(%d+)")
+    values[2] = string.match(msg, "%d+%D+(%d+)")
+    values[3] = string.match(msg, "%d+%D+%d+%D+(%d+)")
+
+    if not values[2] then
+        amount = values[1]
+    elseif not values[3] then
+        amount = values[1] * 100 + values[2]
+    else
+        amount = values[1] * 10000 + values[2] * 100 + values[3]
+    end
 
     local segment = database.global.segments[Grindon:GetSegmentID()]
 
-    local result = segment.money + gold * 10000 + silver * 100 + copper
+    segment.money = segment.money + amount
 
-    segment.money = result
-
-    Widget:SetItem(L["PluginName"], "money", 133784, "Gold", self:FormatCopper(result), "FED000", false)
+    Widget:SetItem(L["PluginName"], "money", 133784, "Gold", self:FormatCopper(segment.money), "FED000", false)
 end
 
 function Currency:OnCurrencyReceive(_, msg)
